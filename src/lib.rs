@@ -79,12 +79,7 @@
 //! See the documentation for the log crate for more information about its API.
 //!
 
-//#[cfg(test)]
-//#[macro_use]
-//extern crate log;
-
 extern crate log;
-
 extern crate ansi_term;
 
 use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
@@ -154,18 +149,18 @@ pub fn init() -> Result<(), SetLoggerError> {
     init_with_level(LogLevel::Warn)
 }
 
-//#[cfg(test)]
-//mod tests {
-//    use init_with_verbosity;
-//
-//    #[test]
-//    fn init_and_macros() {
-//        let l = init_with_verbosity(3);
-//        assert_eq!(l.is_ok(), true);
-//        error!("error log");
-//        warn!("warn log");
-//        info!("info log");
-//        debug!("debug log");
-//        trace!("trace log");
-//    }
-//}
+#[cfg(test)]
+mod tests {
+    use init_with_verbosity;
+
+    #[test]
+    fn init_and_macros() {
+        let l = init_with_verbosity(3);
+        assert_eq!(l.is_ok(), true);
+        //error!("error log");
+        //warn!("warn log");
+        //info!("info log");
+        //debug!("debug log");
+        //trace!("trace log");
+    }
+}
