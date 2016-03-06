@@ -1,0 +1,8 @@
+[package]
+name = "loggerv"
+version = "0.1.0"
+authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
+
+[dependencies]
+log = "0.3.5"
+ansi_term = "0.7.2"
