@@ -10,11 +10,12 @@
 //! The standard example with `clap` as the arg parser.
 //!
 //! ```
-//! #[macro_use] extern crate log;
-//! extern crate loggerv;
+//! #[macro_use]
+//! extern crate log;
 //! extern crate clap;
+//! extern crate loggerv;
 //!
-//! use loggerv;
+//! use loggerv as logger;
 //! use clap::{Arg, App};
 //!
 //! fn main() {
@@ -25,7 +26,7 @@
 //!                             .help("Sets the level of verbosity"))
 //!                    .get_matches();
 //!
-//!     loggerv::init_with_verbosity(args.occurrences_of("v")).unwrap();
+//!     logger::init_with_verbosity(args.occurrences_of("v")).unwrap();
 //!
 //!     error!("this is always printed");
 //!     warn!("this too, and it's printed to stderr");
@@ -42,14 +43,15 @@
 //! and `loggerv` for how to print what's being sent to the macros.
 //!
 //! ```
-//! #[macro_use] extern crate log;
+//! #[macro_use]
+//! extern crate log;
 //! extern crate loggerv;
 //!
-//! use loggerv;
+//! use loggerv as logger;
 //! use log::LogLevel;
 //!
 //! fn main() {
-//!     loggerv::init_from_level(LogLevel::Info).unwrap();
+//!     logger::init_with_level(LogLevel::Info).unwrap();
 //!     debug!("this is a debug {}", "message");
 //!     error!("this is printed by default");
 //! }
@@ -60,13 +62,14 @@
 //! to only show warnings and errors:
 //!
 //! ```
-//! #[macro_use] extern crate log;
+//! #[macro_use]
+//! extern crate log;
 //! extern crate loggerv;
 //!
-//! use loggerv;
+//! use loggerv as logger;
 //!
 //! fn main() {
-//!     loggerv::init().unwrap();
+//!     logger::init().unwrap();
 //!     info!("hidden");
 //!     error!("this is printed by default");
 //! }
@@ -76,7 +79,12 @@
 //! See the documentation for the log crate for more information about its API.
 //!
 
+//#[cfg(test)]
+//#[macro_use]
+//extern crate log;
+
 extern crate log;
+
 extern crate ansi_term;
 
 use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
@@ -146,18 +154,18 @@ pub fn init() -> Result<(), SetLoggerError> {
     init_with_level(LogLevel::Warn)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::init_with_verbosity;
-
-    #[test]
-    fn init_and_macros() {
-        let l = init_with_verbosity(3);
-        assert_eq!(l.is_ok(), true);
-        error!("error log");
-        warn!("warn log");
-        info!("info log");
-        debug!("debug log");
-        trace!("trace log");
-    }
-}
+//#[cfg(test)]
+//mod tests {
+//    use init_with_verbosity;
+//
+//    #[test]
+//    fn init_and_macros() {
+//        let l = init_with_verbosity(3);
+//        assert_eq!(l.is_ok(), true);
+//        error!("error log");
+//        warn!("warn log");
+//        info!("info log");
+//        debug!("debug log");
+//        trace!("trace log");
+//    }
+//}

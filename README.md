@@ -6,7 +6,7 @@ A simple `stdout` and `stderr` writing `Logger` implementation of the `log` crat
 ## Usage
 Add [log](https://crates.io/crates/log) and [loggerv](https://crates.io/crates/loggerv) to `Cargo.toml`.
 
-*[Rust documentation](http://clux.github.io/loggerv)*
+## [documentation](http://clux.github.io/loggerv)
 
 ## License
 MIT-Licensed. See LICENSE file for details.

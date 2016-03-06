@@ -6,3 +6,10 @@ authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
 [dependencies]
 log = "0.3.5"
 ansi_term = "0.7.2"
+
+[[example]]
+name = "clap"
+path = "examples/clap.rs"
+
+[dev-dependencies]
+clap = "2.1.2"
