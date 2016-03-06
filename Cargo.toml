@@ -2,6 +2,13 @@
 name = "loggerv"
 version = "0.1.0"
 authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
+homepage = "https://github.com/clux/loggerv"
+repository = "https://github.com/clux/loggerv"
+license = "MIT"
+keywords = ["log", "logger", "stdio", "cli"]
+description = """
+A simple log implementation that logs to stdout and stderr with colors
+"""
 
 [dependencies]
 log = "0.3.5"
