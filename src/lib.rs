@@ -54,7 +54,7 @@
 //! ```
 //!
 //! # Example
-//! If you don't really care at all you could just use the plain `init` function
+//! If you don't really care at all you could just use the plain `init_quiet` function
 //! to only show warnings and errors:
 //!
 //! ```
@@ -62,7 +62,7 @@
 //! extern crate loggerv;
 //!
 //! fn main() {
-//!     loggerv::init().unwrap();
+//!     loggerv::init_quiet().unwrap();
 //!     info!("hidden");
 //!     error!("this is printed by default");
 //! }
@@ -138,7 +138,7 @@ pub fn init_with_verbosity(verbosity: u64) -> Result<(), SetLoggerError> {
 /// Initializes loggerv with only warnings and errors.
 ///
 /// See the main loggerv documentation page for an example.
-pub fn init() -> Result<(), SetLoggerError> {
+pub fn init_quiet() -> Result<(), SetLoggerError> {
     init_with_level(LogLevel::Warn)
 }
 

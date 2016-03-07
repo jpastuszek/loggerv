@@ -1,9 +1,9 @@
 [package]
 name = "loggerv"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
-homepage = "https://github.com/clux/loggerv"
 repository = "https://github.com/clux/loggerv"
+documentation = "http://clux.github.io/loggerv"
 license = "MIT"
 keywords = ["log", "logger", "stdio", "cli"]
 description = """
