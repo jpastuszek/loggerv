@@ -47,7 +47,7 @@
                 [<span class='inner'>&#x2212;</span>]
             </a>
         </span><a id='src-0' class='srclink' href='../src/loggerv/lib.rs.html#1-159' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>A simple <code>io::stdoud</code> and <code>io::stderr</code> writing <code>Logger</code> implementation from the
+<div class='docblock'><p>A simple <code>io::stdout</code> and <code>io::stderr</code> writing <code>Logger</code> implementation from the
 <code>log</code> crate, using the <code>ansi_term</code> crate for colors and configured at runtime,
 or at compile time with simple function calls. Designed for simple CLIs.</p>
 
@@ -99,14 +99,14 @@ and <code>loggerv</code> for how to print what&#39;s being sent to the macros.</
 }</pre>
 
 <h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
-<p>If you don&#39;t really care at all you could just use the plain <code>init</code> function
+<p>If you don&#39;t really care at all you could just use the plain <code>init_quiet</code> function
 to only show warnings and errors:</p>
 <pre class='rust rust-example-rendered'>
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>loggerv</span>;
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='ident'>loggerv</span>::<span class='ident'>init</span>().<span class='ident'>unwrap</span>();
+    <span class='ident'>loggerv</span>::<span class='ident'>init_quiet</span>().<span class='ident'>unwrap</span>();
     <span class='macro'>info</span><span class='macro'>!</span>(<span class='string'>&quot;hidden&quot;</span>);
     <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;this is printed by default&quot;</span>);
 }</pre>
@@ -115,8 +115,8 @@ to only show warnings and errors:</p>
 </div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='fn' href='fn.init.html'
-                               title='loggerv::init'>init</a></td>
+                        <td><a class='fn' href='fn.init_quiet.html'
+                               title='loggerv::init_quiet'>init_quiet</a></td>
                         <td class='docblock short'>
                              <p>Initializes loggerv with only warnings and errors.</p>
 

@@ -201,7 +201,7 @@
 <span id="158">158</span>
 <span id="159">159</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! A simple `io::stdoud` and `io::stderr` writing `Logger` implementation from the</span>
+<span class='doccomment'>//! A simple `io::stdout` and `io::stderr` writing `Logger` implementation from the</span>
 <span class='doccomment'>//! `log` crate, using the `ansi_term` crate for colors and configured at runtime,</span>
 <span class='doccomment'>//! or at compile time with simple function calls. Designed for simple CLIs.</span>
 <span class='doccomment'>//!</span>
@@ -257,7 +257,7 @@
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Example</span>
-<span class='doccomment'>//! If you don&#39;t really care at all you could just use the plain `init` function</span>
+<span class='doccomment'>//! If you don&#39;t really care at all you could just use the plain `init_quiet` function</span>
 <span class='doccomment'>//! to only show warnings and errors:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```</span>
@@ -265,7 +265,7 @@
 <span class='doccomment'>//! extern crate loggerv;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! fn main() {</span>
-<span class='doccomment'>//!     loggerv::init().unwrap();</span>
+<span class='doccomment'>//!     loggerv::init_quiet().unwrap();</span>
 <span class='doccomment'>//!     info!(&quot;hidden&quot;);</span>
 <span class='doccomment'>//!     error!(&quot;this is printed by default&quot;);</span>
 <span class='doccomment'>//! }</span>
@@ -341,7 +341,7 @@
 <span class='doccomment'>/// Initializes loggerv with only warnings and errors.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See the main loggerv documentation page for an example.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>init</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>SetLoggerError</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>init_quiet</span>() <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>SetLoggerError</span><span class='op'>&gt;</span> {
     <span class='ident'>init_with_level</span>(<span class='ident'>LogLevel</span>::<span class='ident'>Warn</span>)
 }
 
