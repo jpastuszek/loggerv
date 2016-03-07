@@ -1,4 +1,4 @@
-//! A simple `io::stdoud` and `io::stderr` writing `Logger` implementation from the
+//! A simple `io::stdout` and `io::stderr` writing `Logger` implementation from the
 //! `log` crate, using the `ansi_term` crate for colors and configured at runtime,
 //! or at compile time with simple function calls. Designed for simple CLIs.
 //!
