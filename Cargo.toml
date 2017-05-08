@@ -1,22 +1,20 @@
 [package]
-name = "loggerv"
-version = "0.3.0"
 authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
-repository = "https://github.com/clux/loggerv"
+description = "A simple log implementation that logs to stdout and stderr with colors"
 documentation = "http://clux.github.io/loggerv"
-license = "MIT"
 keywords = ["log", "logger", "stdio", "cli"]
-description = """
-A simple log implementation that logs to stdout and stderr with colors
-"""
+license = "MIT"
+name = "loggerv"
+repository = "https://github.com/clux/loggerv"
+version = "0.3.0"
 
 [dependencies]
-log = "0.3.5"
-ansi_term = "0.9"
+ansi_term = "0.9.0"
+log = "0.3.7"
+
+[dev-dependencies]
+clap = "2.1.2"
 
 [[example]]
 name = "clap"
 path = "examples/clap.rs"
-
-[dev-dependencies]
-clap = "2.1.2"
