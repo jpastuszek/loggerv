@@ -98,6 +98,7 @@ impl Log for VLogger {
         metadata.level() <= self.log_level
     }
 
+    #[allow(unused_must_use)]
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let msg = format!("{}: {}",
