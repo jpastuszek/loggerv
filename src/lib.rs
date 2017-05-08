@@ -72,7 +72,13 @@
 //! See the documentation for the log crate for more information about its API.
 //!
 
+#[cfg(test)]
+#[macro_use]
 extern crate log;
+
+#[cfg(not(test))]
+extern crate log;
+
 extern crate ansi_term;
 
 use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
@@ -150,10 +156,10 @@ mod tests {
     fn init_and_macros() {
         let l = init_with_verbosity(3);
         assert_eq!(l.is_ok(), true);
-        //error!("error log");
-        //warn!("warn log");
-        //info!("info log");
-        //debug!("debug log");
-        //trace!("trace log");
+        error!("error log");
+        warn!("warn log");
+        info!("info log");
+        debug!("debug log");
+        trace!("trace log");
     }
 }
