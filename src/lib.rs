@@ -98,14 +98,13 @@ impl Log for VLogger {
         metadata.level() <= self.log_level
     }
 
-    #[allow(unused_must_use)]
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let msg = format!("{}: {}",
                               level_style(record.level()).paint(record.location().module_path()),
                               record.args());
             if record.level() <= LogLevel::Warn {
-                writeln!(&mut io::stderr(), "{}", msg);
+                let _ = writeln!(&mut io::stderr(), "{}", msg);
             } else {
                 println!("{}", msg);
             }
