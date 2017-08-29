@@ -1,5 +1,5 @@
 [package]
-authors = ["Eirik Albrigtsen <analsandblaster@gmail.com>"]
+authors = ["Eirik Albrigtsen <sszynrae@gmail.com>"]
 description = "A simple log implementation that logs to stdout and stderr with colors"
 documentation = "http://clux.github.io/loggerv"
 keywords = ["log", "logger", "stdio", "cli"]
