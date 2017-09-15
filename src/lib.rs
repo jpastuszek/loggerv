@@ -79,6 +79,7 @@ extern crate log;
 #[cfg(not(test))]
 extern crate log;
 
+extern crate atty;
 extern crate ansi_term;
 
 use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
@@ -106,7 +107,12 @@ impl Log for VLogger {
 
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
-            let level = level_style(record.level()).paint(record.location().module_path());
+            let level = if atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr) {
+                format!("{}",
+                        level_style(record.level()).paint(record.location().module_path()))
+            } else {
+                format!("{}", record.location().module_path())
+            };
 
             if record.level() <= LogLevel::Warn {
                 let _ = writeln!(&mut io::stderr(), "{}: {}", level, record.args());
