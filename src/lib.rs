@@ -79,6 +79,7 @@ extern crate log;
 #[cfg(not(test))]
 extern crate log;
 
+extern crate atty;
 extern crate ansi_term;
 
 use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
@@ -87,6 +88,14 @@ use ansi_term::Colour;
 
 struct VLogger {
     log_level: LogLevel,
+    colors: bool,
+}
+
+impl VLogger {
+    fn new(log_level: LogLevel) -> VLogger {
+        let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
+        VLogger { log_level, colors }
+    }
 }
 
 fn level_style(l: LogLevel) -> Colour {
@@ -106,7 +115,11 @@ impl Log for VLogger {
 
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
-            let level = level_style(record.level()).paint(record.location().module_path());
+            let level = if self.colors {
+                level_style(record.level()).paint(record.location().module_path()).to_string()
+            } else {
+                record.location().module_path().to_string()
+            };
 
             if record.level() <= LogLevel::Warn {
                 let _ = writeln!(&mut io::stderr(), "{}: {}", level, record.args());
@@ -123,7 +136,7 @@ impl Log for VLogger {
 pub fn init_with_level(log_level: LogLevel) -> Result<(), SetLoggerError> {
     log::set_logger(|max_log_level| {
         max_log_level.set(log_level.to_log_level_filter());
-        Box::new(VLogger { log_level: log_level })
+        Box::new(VLogger::new(log_level))
     })
 }
 
