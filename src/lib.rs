@@ -108,10 +108,9 @@ impl Log for VLogger {
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let level = if atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr) {
-                format!("{}",
-                        level_style(record.level()).paint(record.location().module_path()))
+                level_style(record.level()).paint(record.location().module_path()).to_string()
             } else {
-                format!("{}", record.location().module_path())
+                record.location().module_path().to_string()
             };
 
             if record.level() <= LogLevel::Warn {
