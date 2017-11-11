@@ -115,16 +115,16 @@ impl Log for VLogger {
 
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
-            let level = if self.colors {
-                level_style(record.level()).paint(record.location().module_path()).to_string()
+            let level = record.level();
+            let tag = if self.colors {
+                level_style(level).paint(format!("{} [{}]", level, record.location().module_path())).to_string()
             } else {
-                record.location().module_path().to_string()
+                format!("{} [{}]", level, record.location().module_path())
             };
-
-            if record.level() <= LogLevel::Warn {
-                let _ = writeln!(&mut io::stderr(), "{}: {}", level, record.args());
+            if level <= LogLevel::Warn {
+                let _ = writeln!(&mut io::stderr(), "{}: {}", tag, record.args());
             } else {
-                println!("{}: {}", level, record.args());
+                println!("{}: {}", tag, record.args());
             }
         }
     }
