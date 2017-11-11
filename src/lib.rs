@@ -86,17 +86,7 @@ use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
 use std::io::{self, Write};
 use ansi_term::Colour;
 
-struct VLogger {
-    log_level: LogLevel,
-    colors: bool,
-}
-
-impl VLogger {
-    fn new(log_level: LogLevel) -> VLogger {
-        let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
-        VLogger { log_level, colors }
-    }
-}
+pub const DEFAULT_SEPARATOR: &str = ": ";
 
 fn level_style(l: LogLevel) -> Colour {
     match l {
@@ -105,6 +95,23 @@ fn level_style(l: LogLevel) -> Colour {
         LogLevel::Info => Colour::Fixed(10), // bright green
         LogLevel::Debug => Colour::Fixed(7), // light grey
         LogLevel::Trace => Colour::Fixed(8), // grey
+    }
+}
+
+struct VLogger {
+    log_level: LogLevel,
+    colors: bool,
+    separator: String, 
+}
+
+impl VLogger {
+    fn new(log_level: LogLevel) -> VLogger {
+        let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
+        VLogger { 
+            log_level, 
+            colors ,
+            separator: String::from(DEFAULT_SEPARATOR),
+        }
     }
 }
 
@@ -122,9 +129,9 @@ impl Log for VLogger {
                 format!("{} [{}]", level, record.location().module_path())
             };
             if level <= LogLevel::Warn {
-                let _ = writeln!(&mut io::stderr(), "{}: {}", tag, record.args());
+                let _ = writeln!(&mut io::stderr(), "{}{}{}", tag, self.separator, record.args());
             } else {
-                println!("{}: {}", tag, record.args());
+                println!("{}{}{}", tag, self.separator, record.args());
             }
         }
     }
