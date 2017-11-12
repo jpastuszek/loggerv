@@ -74,7 +74,7 @@
 //! 
 //! ## Example
 //!
-//! If you want to configure the output, the Builder pattern API for Logger can be used.
+//! If you want to configure the output, the Builder pattern API can be used.
 //!
 //! ```
 //! #[macro_use] extern crate log;
