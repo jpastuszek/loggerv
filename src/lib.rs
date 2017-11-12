@@ -129,6 +129,13 @@ impl Logger {
         self
     }
 
+    /// Disables color output of all log statements on all streams regardless if the logger is used
+    /// in a terminal.
+    pub fn disable_color(mut self) -> Self {
+        self.colors = false;
+        self
+    }
+
     /// Converts the verbosity to a log level.
     ///
     /// A verbosity of zero (0) is the default, which means ERROR and WARN log statements are
