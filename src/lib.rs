@@ -134,11 +134,11 @@ use std::io::{self, Write};
 use ansi_term::Colour;
 
 pub const DEFAULT_INCLUDE_LEVEL: bool = false;
+pub const DEFAULT_INCLUDE_LINE_NUMBERS: bool = false;
+pub const DEFAULT_INCLUDE_MODULE_PATH: bool = true;
+pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 pub const DEFAULT_COLORS: bool = true;
 pub const DEFAULT_SEPARATOR: &str = ": ";
-pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
-pub const DEFAULT_LINE_NUMBERS: bool = false;
-pub const DEFAULT_MODULE_PATH: bool = true;
 pub const DEFAULT_ERROR_COLOR: Colour = Colour::Fixed(9); // bright red
 pub const DEFAULT_WARN_COLOR: Colour = Colour::Fixed(11); // bright yellow
 pub const DEFAULT_INFO_COLOR: Colour = Colour::Fixed(10); // bright green
@@ -149,9 +149,9 @@ pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
 pub struct Logger {
     colors: bool,
     include_level: bool,
-    line_numbers: bool,
+    include_line_numbers: bool,
+    include_module_path: bool,
     level: LogLevel,
-    module_path: bool,
     separator: String,
     error_color: Colour,
     warn_color: Colour,
@@ -176,9 +176,9 @@ impl Logger {
         Logger { 
             colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
             include_level: DEFAULT_INCLUDE_LEVEL,
-            line_numbers: DEFAULT_LINE_NUMBERS,
+            include_line_numbers: DEFAULT_INCLUDE_LINE_NUMBERS,
+            include_module_path: DEFAULT_INCLUDE_MODULE_PATH,
             level: DEFAULT_LEVEL, 
-            module_path: DEFAULT_MODULE_PATH,
             separator: String::from(DEFAULT_SEPARATOR),
             error_color: DEFAULT_ERROR_COLOR,
             warn_color: DEFAULT_WARN_COLOR,
@@ -250,7 +250,7 @@ impl Logger {
     /// Enables or disables including line numbers in the "tag" portion of the log statement. The
     /// tag is the text to the left of the separator.
     pub fn line_numbers(mut self, l: bool) -> Self {
-        self.line_numbers = l;
+        self.include_line_numbers = l;
         self
     }
 
@@ -270,7 +270,7 @@ impl Logger {
     /// Enables or disables including the module path in the "tag" portion of the log statement.
     /// The tag is the text to the left of the separator.
     pub fn module_path(mut self, m: bool) -> Self {
-        self.module_path = m;
+        self.include_module_path = m;
         self
     }
 
@@ -312,23 +312,37 @@ impl Log for Logger {
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let level = record.level();
-            let module_path = if self.module_path {
-                format!(" [{}]", record.location().module_path())
+            let level_text = if self.include_level {
+                level.to_string()
             } else {
                 String::new()
             };
-            let line = if self.line_numbers {
+            let module_path_text = if self.include_module_path {
+                if self.include_level {
+                    format!(" [{}]", record.location().module_path())
+                } else {
+                    record.location().module_path().to_string()
+                }
+            } else {
+                String::new()
+            };
+            let line_text = if self.include_line_numbers {
                 format!(" (line {})", record.location().line())
             } else {
                 String::new()
             };
-            let tag = if self.colors {
-                self.color(&level).paint(format!("{}{}{}", level, module_path, line)).to_string()
-            } else {
-                format!("{}{}{}", level, module_path, line)
-            };
+            let mut tag = format!("{}{}{}", level_text, module_path_text, line_text);
+            if self.colors {
+                tag = self.color(&level).paint(tag).to_string();
+            }
             if level <= LogLevel::Warn {
-                let _ = writeln!(&mut io::stderr(), "{}{}{}", tag, self.separator, record.args());
+                writeln!(
+                    &mut io::stderr(), 
+                    "{}{}{}", 
+                    tag, 
+                    self.separator, 
+                    record.args()
+                ).expect("Writing to stderr");
             } else {
                 println!("{}{}{}", tag, self.separator, record.args());
             }
@@ -374,10 +388,10 @@ mod tests {
     fn defaults_are_correct() {
         let logger = Logger::new();
         assert_eq!(logger.include_level, DEFAULT_INCLUDE_LEVEL);
+        assert_eq!(logger.include_line_numbers, DEFAULT_INCLUDE_LINE_NUMBERS);
+        assert_eq!(logger.include_module_path, DEFAULT_INCLUDE_MODULE_PATH);
         assert_eq!(logger.colors, DEFAULT_COLORS);
-        assert_eq!(logger.line_numbers, DEFAULT_LINE_NUMBERS);
         assert_eq!(logger.level, DEFAULT_LEVEL);
-        assert_eq!(logger.module_path, DEFAULT_MODULE_PATH);
         assert_eq!(logger.separator, String::from(DEFAULT_SEPARATOR));
         assert_eq!(logger.error_color, DEFAULT_ERROR_COLOR);
         assert_eq!(logger.warn_color, DEFAULT_WARN_COLOR);
@@ -432,7 +446,7 @@ mod tests {
     #[test]
     fn line_numbers_works() {
         let logger = Logger::new().line_numbers(true);
-        assert!(logger.line_numbers);
+        assert!(logger.include_line_numbers);
     }
 
     #[test]
@@ -450,7 +464,7 @@ mod tests {
     #[test]
     fn module_path_works() {
         let logger = Logger::new().module_path(false);
-        assert!(!logger.module_path);
+        assert!(!logger.include_module_path);
     }
 
     #[test]
