@@ -117,8 +117,7 @@
 //!
 
 #[cfg(test)]
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate log;
 
 #[cfg(not(test))]
 extern crate log;
