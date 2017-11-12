@@ -355,6 +355,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn defaults_are_correct() {
+        let logger = Logger::new();
+        assert_eq!(logger.colors, DEFAULT_COLORS);
+        assert_eq!(logger.line_numbers, DEFAULT_LINE_NUMBERS);
+        assert_eq!(logger.level, DEFAULT_LEVEL);
+        assert_eq!(logger.module_path, DEFAULT_MODULE_PATH);
+        assert_eq!(logger.separator, String::from(DEFAULT_SEPARATOR));
+        assert_eq!(logger.error_color, DEFAULT_ERROR_COLOR);
+        assert_eq!(logger.warn_color, DEFAULT_WARN_COLOR);
+        assert_eq!(logger.info_color, DEFAULT_INFO_COLOR);
+        assert_eq!(logger.debug_color, DEFAULT_DEBUG_COLOR);
+        assert_eq!(logger.trace_color, DEFAULT_TRACE_COLOR);
+    }
+
+    #[test]
     fn error_color_works() {
         let logger = Logger::new().error_color(Colour::Fixed(8));
         assert_eq!(logger.error_color, Colour::Fixed(8));
