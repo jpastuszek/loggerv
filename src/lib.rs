@@ -91,6 +91,11 @@ pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 pub const DEFAULT_LINE_NUMBERS: bool = false;
 pub const DEFAULT_MODULE_PATH: bool = true;
+pub const DEFAULT_ERROR_COLOR: Colour = Colour::Fixed(9); // bright red
+pub const DEFAULT_WARN_COLOR: Colour = Colour::Fixed(11); // bright yellow
+pub const DEFAULT_INFO_COLOR: Colour = Colour::Fixed(10); // bright green
+pub const DEFAULT_DEBUG_COLOR: Colour = Colour::Fixed(7); // light grey
+pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Logger {
@@ -119,11 +124,11 @@ impl Logger {
             level: DEFAULT_LEVEL, 
             module_path: DEFAULT_MODULE_PATH,
             separator: String::from(DEFAULT_SEPARATOR),
-            error_color: Colour::Fixed(9), // bright red
-            warn_color: Colour::Fixed(11), // bright yellow
-            info_color: Colour::Fixed(10), // bright green
-            debug_color: Colour::Fixed(7), // light grey
-            trace_color: Colour::Fixed(8), // grey
+            error_color: DEFAULT_ERROR_COLOR,
+            warn_color: DEFAULT_WARN_COLOR,
+            info_color: DEFAULT_INFO_COLOR,
+            debug_color: DEFAULT_DEBUG_COLOR,
+            trace_color: DEFAULT_TRACE_COLOR,
         }
     }
 
