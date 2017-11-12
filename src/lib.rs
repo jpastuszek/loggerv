@@ -102,6 +102,7 @@ fn level_style(l: LogLevel) -> Colour {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Logger {
     colors: bool,
     line_numbers: bool,
