@@ -87,6 +87,7 @@ use std::io::{self, Write};
 use ansi_term::Colour;
 
 pub const DEFAULT_SEPARATOR: &str = ": ";
+pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 
 fn level_style(l: LogLevel) -> Colour {
     match l {
@@ -98,26 +99,69 @@ fn level_style(l: LogLevel) -> Colour {
     }
 }
 
-struct VLogger {
-    log_level: LogLevel,
+pub struct Logger {
+    level: LogLevel,
     colors: bool,
     separator: String, 
 }
 
-impl VLogger {
-    fn new(log_level: LogLevel) -> VLogger {
+
+impl Logger {
+    /// Creates a new instance of the verbosity-based logger.
+    ///
+    /// The default level is WARN. Color is enabled if the parent application or library is running
+    /// from a terminal, i.e. running a tty. The default separator is the ": " string. 
+    pub fn new() -> Logger {
         let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
-        VLogger { 
-            log_level, 
-            colors ,
+        Logger { 
+            level: DEFAULT_LEVEL, 
+            colors: colors,
             separator: String::from(DEFAULT_SEPARATOR),
         }
     }
+
+    /// Sets the separator string.
+    ///
+    /// The separator is the string between the "tag" and the text that make up a log statement.
+    /// The tag will be colorized if enabled, while the text will not. The default is `: `.
+    pub fn separator(mut self, s: &str) -> Self {
+        self.separator = String::from(s);
+        self
+    }
+
+    /// Converts the verbosity to a log level.
+    ///
+    /// A verbosity of zero (0) is the default, which means ERROR and WARN log statements are
+    /// printed to `stderr`. No other log statements are printed on any of the standard streams
+    /// (`stdout` or `stderr`). As the verbosity is increased, the log level is increased and more
+    /// log statements will be printed to `stdout`. A verbosity of 1 will print INFO log statements
+    /// to `stdout` in addition to ERROR and WARN. A verbosity of 2 will print INFO and DEBUG log
+    /// statements to `stdout`. A verbosity of 3 or higher will print INFO, DEBUG, and TRACE
+    /// log statements to `stdout` with ERROR and WARN statements printed to `stderr`.
+    pub fn verbosity(mut self, v: u64) -> Self {
+        self.level = match v {
+                0 => LogLevel::Warn,  // default
+                1 => LogLevel::Info,  // -v
+                2 => LogLevel::Debug, // -vv
+                _ => LogLevel::Trace, // -vvv and above
+        };
+        self
+    }
+
+    /// Initializes the logger. 
+    ///
+    /// This also consumes the logger and cannot no longer be modified after initialization.
+    pub fn init(self) -> Result<(), SetLoggerError> {
+        log::set_logger(|max_level| {
+            max_level.set(self.level.to_log_level_filter());
+            Box::new(self)
+        })
+    }
 }
 
-impl Log for VLogger {
+impl Log for Logger {
     fn enabled(&self, metadata: &LogMetadata) -> bool {
-        metadata.level() <= self.log_level
+        metadata.level() <= self.level
     }
 
     fn log(&self, record: &LogRecord) {
@@ -137,35 +181,41 @@ impl Log for VLogger {
     }
 }
 
+impl Default for Logger {
+    fn default() -> Logger {
+        Logger::new()
+    }
+}
+
 /// Initialize loggerv with a maximal log level.
 ///
 /// See the main loggerv documentation page for an example.
-pub fn init_with_level(log_level: LogLevel) -> Result<(), SetLoggerError> {
-    log::set_logger(|max_log_level| {
-        max_log_level.set(log_level.to_log_level_filter());
-        Box::new(VLogger::new(log_level))
-    })
-}
+//pub fn init_with_level(level: LogLevel) -> Result<(), SetLoggerError> {
+    //log::set_logger(|max_level| {
+        //max_level.set(log_level.to_log_level_filter());
+        //Box::new(Logger::new(log_level))
+    //})
+//}
 
 /// Initialize loggerv with a verbosity level.
 ///
 /// Intended to be used with an arg parser counting the amount of -v flags.
 /// See the main loggerv documentation page for an example.
-pub fn init_with_verbosity(verbosity: u64) -> Result<(), SetLoggerError> {
-    init_with_level(match verbosity {
-        0 => LogLevel::Warn,  // default
-        1 => LogLevel::Info,  // -v
-        2 => LogLevel::Debug, // -vv
-        _ => LogLevel::Trace, // -vvv and above
-    })
-}
+//pub fn init_with_verbosity(verbosity: u64) -> Result<(), SetLoggerError> {
+    //init_with_level(match verbosity {
+        //0 => LogLevel::Warn,  // default
+        //1 => LogLevel::Info,  // -v
+        //2 => LogLevel::Debug, // -vv
+        //_ => LogLevel::Trace, // -vvv and above
+    //})
+//}
 
 /// Initializes loggerv with only warnings and errors.
 ///
 /// See the main loggerv documentation page for an example.
-pub fn init_quiet() -> Result<(), SetLoggerError> {
-    init_with_level(LogLevel::Warn)
-}
+//pub fn init_quiet() -> Result<(), SetLoggerError> {
+    //init_with_level(LogLevel::Warn)
+//}
 
 #[cfg(test)]
 mod tests {

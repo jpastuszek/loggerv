@@ -11,8 +11,8 @@ fn main() {
                             .multiple(true)
                             .help("Sets the level of verbosity"))
                    .get_matches();
-
-    loggerv::init_with_verbosity(args.occurrences_of("v")).unwrap();
+    
+    loggerv::Logger::new().verbosity(args.occurrences_of("v")).init().unwrap();
 
     error!("this is always printed");
     warn!("this too, and it's printed to stderr");
