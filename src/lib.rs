@@ -163,7 +163,13 @@ impl Logger {
     ///
     /// The default level is WARN. Color is enabled if the parent application or library is running
     /// from a terminal, i.e. running a tty. The default separator is the ": " string. The default
-    /// output format is `LEVEL [module path]: message`.
+    /// output format is `LEVEL [module path]: message`. The following default colors are used:
+    ///
+    /// * Error = Bright Red
+    /// * Warn = Bright Yellow
+    /// * Info = Bright Green
+    /// * Debug = Light Grey
+    /// * Trace = Grey
     pub fn new() -> Logger {
         Logger { 
             colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
