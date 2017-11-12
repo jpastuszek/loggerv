@@ -40,7 +40,7 @@ $ cargo run --example config -- -vvv -d -n
 
 This will run an example that allows for run-time configuration of output based on command line arguments. For both examples, the `-h,--help` flag can be used to display information about the various flags and their effects on logging and output.
 
-## [documentation](http://clux.github.io/loggerv)
+## [Documentation](http://clux.github.io/loggerv)
 
 ## License
 
