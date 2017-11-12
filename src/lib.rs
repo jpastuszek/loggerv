@@ -89,6 +89,7 @@ use ansi_term::Colour;
 pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 pub const DEFAULT_LINE_NUMBERS: bool = false;
+pub const DEFAULT_MODULE_PATH: bool = true;
 
 fn level_style(l: LogLevel) -> Colour {
     match l {
@@ -103,6 +104,7 @@ fn level_style(l: LogLevel) -> Colour {
 pub struct Logger {
     line_numbers: bool,
     level: LogLevel,
+    module_path: bool,
     colors: bool,
     separator: String, 
 }
@@ -118,6 +120,7 @@ impl Logger {
         Logger { 
             line_numbers: DEFAULT_LINE_NUMBERS,
             level: DEFAULT_LEVEL, 
+            module_path: DEFAULT_MODULE_PATH,
             colors: colors,
             separator: String::from(DEFAULT_SEPARATOR),
         }
@@ -134,7 +137,7 @@ impl Logger {
 
     /// Disables color output of all log statements on all streams regardless if the logger is used
     /// in a terminal.
-    pub fn disable_color(mut self) -> Self {
+    pub fn disable_colors(mut self) -> Self {
         self.colors = false;
         self
     }
@@ -143,6 +146,13 @@ impl Logger {
     /// tag is the text to the left of the separator.
     pub fn line_numbers(mut self, l: bool) -> Self {
         self.line_numbers = l;
+        self
+    }
+
+    /// Enables or disables including the module path in the "tag" portion of the log statement.
+    /// The tag is the text to the left of the separator.
+    pub fn module_path(mut self, m: bool) -> Self {
+        self.module_path = m;
         self
     }
 
@@ -176,7 +186,7 @@ impl Logger {
     }
 
     fn format_tag(level: &LogLevel, location: &str, line: &str) -> String {
-        format!("{} [{}]{}", level, location, line)
+        format!("{}{}{}", level, location, line)
     }
 }
 
@@ -188,16 +198,20 @@ impl Log for Logger {
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let level = record.level();
-            let location = record.location().module_path();
+            let module_path = if self.module_path {
+                format!(" [{}]", record.location().module_path())
+            } else {
+                String::new()
+            };
             let line = if self.line_numbers {
                 format!(" (line {})", record.location().line())
             } else {
                 String::new()
             };
             let tag = if self.colors {
-                level_style(level).paint(Logger::format_tag(&level, &location, &line)).to_string()
+                level_style(level).paint(Logger::format_tag(&level, &module_path, &line)).to_string()
             } else {
-                Logger::format_tag(&level, &location, &line)
+                Logger::format_tag(&level, &module_path, &line)
             };
             if level <= LogLevel::Warn {
                 let _ = writeln!(&mut io::stderr(), "{}{}{}", tag, self.separator, record.args());
