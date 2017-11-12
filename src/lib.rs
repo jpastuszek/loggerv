@@ -1,12 +1,14 @@
 //! A simple `io::stdout` and `io::stderr` writing `Logger` implementation from the
-//! `log` crate, using the `ansi_term` crate for colors and configured at runtime,
+//! `log` crate, using the `ansi_term` crate for colors and configured at runtime via a verbosity
 //! or at compile time with simple function calls. Designed for simple CLIs.
 //!
-//! This library only comes with 3 public ways to initialize the global logger.
-//! Ensure you call one of these exactly once early in your rust program as shown
-//! in one of the examples below.
+//! This library includes a Builder pattern API for configuring a logger and three initializing
+//! helper functions to create a default logger. Ensure you create and initialize only once
+//! a global logger with the Builder pattern API or use one of the three public helper functions
+//! early in your program as shown in the examples below.
 //!
 //! ## Example
+//!
 //! The standard example with `clap` as the arg parser using the default configuration.
 //!
 //! ```
@@ -37,6 +39,7 @@
 //! But obviously use whatever argument parsing methods you prefer.
 //!
 //! ## Example
+//!
 //! For a compile time switch, all you really need is `log` (for the macros)
 //! and `loggerv` for how to print what's being sent to the macros with the default configuration.
 //!
@@ -53,7 +56,8 @@
 //! }
 //! ```
 //!
-//! # Example
+//! ## Example
+//!
 //! If you don't really care at all you could just use the plain `init_quiet` function
 //! to only show warnings and errors with the default configuration:
 //!
@@ -68,7 +72,8 @@
 //! }
 //! ```
 //! 
-//! # Example
+//! ## Example
+//!
 //! If you want to configure the output, the Builder pattern API for Logger can be used.
 //!
 //! ```
