@@ -12,13 +12,7 @@ fn main() {
                             .help("Sets the level of verbosity"))
                    .get_matches();
     
-    loggerv::Logger::new()
-        .verbosity(args.occurrences_of("v"))
-        .line_numbers(true)
-        .module_path(false)
-        .colors(true)
-        .init()
-        .unwrap();
+    loggerv::init_with_verbosity(args.occurrences_of("v")).unwrap();
 
     error!("this is always printed");
     warn!("this too, and it's printed to stderr");

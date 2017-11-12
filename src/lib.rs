@@ -7,7 +7,7 @@
 //! in one of the examples below.
 //!
 //! ## Example
-//! The standard example with `clap` as the arg parser.
+//! The standard example with `clap` as the arg parser using the default configuration.
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -38,7 +38,7 @@
 //!
 //! ## Example
 //! For a compile time switch, all you really need is `log` (for the macros)
-//! and `loggerv` for how to print what's being sent to the macros.
+//! and `loggerv` for how to print what's being sent to the macros with the default configuration.
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -55,7 +55,7 @@
 //!
 //! # Example
 //! If you don't really care at all you could just use the plain `init_quiet` function
-//! to only show warnings and errors:
+//! to only show warnings and errors with the default configuration:
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -67,7 +67,46 @@
 //!     error!("this is printed by default");
 //! }
 //! ```
+//! 
+//! # Example
+//! If you want to configure the output, the Builder pattern API for Logger can be used.
 //!
+//! ```
+//! #[macro_use] extern crate log;
+//! extern crate clap;
+//! extern crate loggerv;
+//!
+//! use clap::{Arg, App};
+//!
+//! fn main() {
+//!     let args = App::new("app")
+//!                    .arg(Arg::with_name("v")
+//!                             .short("v")
+//!                             .multiple(true)
+//!                             .help("Sets the level of verbosity"))
+//!                    .get_matches();
+//!
+//!     // This will change the log configuration to include line numbers in the "tag" portion of
+//!     // the statement, which is the text to the left of the separator, change the separator from
+//!     // a colon to an equal sign, hide or disable the module path, and disable colorized output.
+//!     // See the Logger documentation for more configuration methods and the ability to change
+//!     // the colors for each log level.
+//!     loggerv::Logger::new()
+//!         .verbosity(args.occurrences_of("v"))
+//!         .line_numbers(true)
+//!         .separator(" = ")
+//!         .module_path(false)
+//!         .colors(false)
+//!         .init()
+//!         .unwrap();
+//!
+//!     error!("this is always printed");
+//!     warn!("this too, and it's printed to stderr");
+//!     info!("this is optional");  // for ./app -v or higher
+//!     debug!("this is optional"); // for ./app -vv or higher
+//!     trace!("this is optional"); // for ./app -vvv
+//! }
+//! ```
 //!
 //! See the documentation for the log crate for more information about its API.
 //!
