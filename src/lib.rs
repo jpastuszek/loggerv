@@ -133,6 +133,7 @@ use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
 use std::io::{self, Write};
 use ansi_term::Colour;
 
+pub const DEFAULT_INCLUDE_LEVEL: bool = false;
 pub const DEFAULT_COLORS: bool = true;
 pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
@@ -147,6 +148,7 @@ pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
 #[derive(Debug, Clone, PartialEq)]
 pub struct Logger {
     colors: bool,
+    include_level: bool,
     line_numbers: bool,
     level: LogLevel,
     module_path: bool,
@@ -173,6 +175,7 @@ impl Logger {
     pub fn new() -> Logger {
         Logger { 
             colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
+            include_level: DEFAULT_INCLUDE_LEVEL,
             line_numbers: DEFAULT_LINE_NUMBERS,
             level: DEFAULT_LEVEL, 
             module_path: DEFAULT_MODULE_PATH,
@@ -248,6 +251,13 @@ impl Logger {
     /// tag is the text to the left of the separator.
     pub fn line_numbers(mut self, l: bool) -> Self {
         self.line_numbers = l;
+        self
+    }
+
+    /// Enables or disables including the level in the log statement's tag portion. The tag of the
+    /// log statement is the text to the left of the separator.
+    pub fn level(mut self, l: bool) -> Self {
+        self.include_level = l;
         self
     }
 
@@ -336,7 +346,7 @@ impl Default for Logger {
 ///
 /// See the main loggerv documentation page for an example.
 pub fn init_with_level(level: LogLevel) -> Result<(), SetLoggerError> {
-    Logger::new().level(level).init()
+    Logger::new().max_level(level).init()
 }
 
 /// Initialize loggerv with a verbosity level.
@@ -363,6 +373,7 @@ mod tests {
     #[test]
     fn defaults_are_correct() {
         let logger = Logger::new();
+        assert_eq!(logger.include_level, DEFAULT_INCLUDE_LEVEL);
         assert_eq!(logger.colors, DEFAULT_COLORS);
         assert_eq!(logger.line_numbers, DEFAULT_LINE_NUMBERS);
         assert_eq!(logger.level, DEFAULT_LEVEL);
@@ -422,6 +433,12 @@ mod tests {
     fn line_numbers_works() {
         let logger = Logger::new().line_numbers(true);
         assert!(logger.line_numbers);
+    }
+
+    #[test]
+    fn level_works() {
+        let logger = Logger::new().level(true);
+        assert!(logger.include_level);
     }
 
     #[test]
