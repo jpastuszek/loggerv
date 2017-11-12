@@ -86,6 +86,7 @@ use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
 use std::io::{self, Write};
 use ansi_term::Colour;
 
+pub const DEFAULT_COLORS: bool = true;
 pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 pub const DEFAULT_LINE_NUMBERS: bool = false;
@@ -102,10 +103,10 @@ fn level_style(l: LogLevel) -> Colour {
 }
 
 pub struct Logger {
+    colors: bool,
     line_numbers: bool,
     level: LogLevel,
     module_path: bool,
-    colors: bool,
     separator: String, 
 }
 
@@ -116,12 +117,11 @@ impl Logger {
     /// The default level is WARN. Color is enabled if the parent application or library is running
     /// from a terminal, i.e. running a tty. The default separator is the ": " string. 
     pub fn new() -> Logger {
-        let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
         Logger { 
+            colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
             line_numbers: DEFAULT_LINE_NUMBERS,
             level: DEFAULT_LEVEL, 
             module_path: DEFAULT_MODULE_PATH,
-            colors: colors,
             separator: String::from(DEFAULT_SEPARATOR),
         }
     }
@@ -135,10 +135,12 @@ impl Logger {
         self
     }
 
-    /// Disables color output of all log statements on all streams regardless if the logger is used
-    /// in a terminal.
-    pub fn disable_colors(mut self) -> Self {
-        self.colors = false;
+    /// Enables or disables colorizing the output. 
+    ///
+    /// If the logger is _not_ used in a terminal, then
+    /// the output is _not_ colorized regardless of the parameter value.
+    pub fn colors(mut self, c: bool) -> Self {
+        self.colors = c && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
         self
     }
 

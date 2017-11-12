@@ -16,6 +16,7 @@ fn main() {
         .verbosity(args.occurrences_of("v"))
         .line_numbers(true)
         .module_path(false)
+        .colors(true)
         .init()
         .unwrap();
 
