@@ -19,3 +19,7 @@ clap = "2.1.2"
 [[example]]
 name = "clap"
 path = "examples/clap.rs"
+
+[[example]]
+name = "config"
+path = "examples/config.rs"
