@@ -116,10 +116,6 @@
 //! See the documentation for the log crate for more information about its API.
 //!
 
-#[cfg(test)]
-#[macro_use] extern crate log;
-
-#[cfg(not(test))]
 extern crate log;
 
 extern crate atty;
@@ -346,16 +342,91 @@ pub fn init_quiet() -> Result<(), SetLoggerError> {
 
 #[cfg(test)]
 mod tests {
-    use init_with_verbosity;
+    use log::LogLevel;
+    use ansi_term::Colour;
+    use super::*;
 
     #[test]
-    fn init_and_macros() {
-        let l = init_with_verbosity(3);
-        assert_eq!(l.is_ok(), true);
-        error!("error log");
-        warn!("warn log");
-        info!("info log");
-        debug!("debug log");
-        trace!("trace log");
+    fn error_color_works() {
+        let logger = Logger::new().error_color(Colour::Fixed(8));
+        assert_eq!(logger.error_color, Colour::Fixed(8));
+    }
+
+    #[test]
+    fn warn_color_works() {
+        let logger = Logger::new().warn_color(Colour::Fixed(8));
+        assert_eq!(logger.warn_color, Colour::Fixed(8));
+    }
+
+    #[test]
+    fn info_color_works() {
+        let logger = Logger::new().info_color(Colour::Fixed(8));
+        assert_eq!(logger.info_color, Colour::Fixed(8));
+    }
+
+    #[test]
+    fn debug_color_works() {
+        let logger = Logger::new().debug_color(Colour::Fixed(8));
+        assert_eq!(logger.debug_color, Colour::Fixed(8));
+    }
+
+    #[test]
+    fn trace_color_works() {
+        let logger = Logger::new().trace_color(Colour::Fixed(11));
+        assert_eq!(logger.trace_color, Colour::Fixed(11));
+    }
+
+    #[test]
+    fn separator_works() {
+        const EXPECTED: &str = " = ";
+        let logger = Logger::new().separator(EXPECTED);
+        assert_eq!(logger.separator, EXPECTED);
+    }
+
+    #[test]
+    fn colors_works() {
+        let logger = Logger::new().colors(false);
+        assert!(!logger.colors);
+    }
+
+    #[test]
+    fn line_numbers_works() {
+        let logger = Logger::new().line_numbers(true);
+        assert!(logger.line_numbers);
+    }
+
+    #[test]
+    fn level_works() {
+        let logger = Logger::new().level(LogLevel::Trace);
+        assert_eq!(logger.level, LogLevel::Trace);
+    }
+
+    #[test]
+    fn module_path_works() {
+        let logger = Logger::new().module_path(false);
+        assert!(!logger.module_path);
+    }
+
+    #[test]
+    fn verbosity_works() {
+        let logger = Logger::new().verbosity(3);
+        assert_eq!(logger.level, LogLevel::Trace);
+    }
+
+    #[test]
+    fn init_works() {
+        let result = Logger::new().init();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn color_works() {
+        let logger = Logger::new();
+        assert_eq!(logger.color(&LogLevel::Error), DEFAULT_ERROR_COLOR);
+        assert_eq!(logger.color(&LogLevel::Warn), DEFAULT_WARN_COLOR);
+        assert_eq!(logger.color(&LogLevel::Info), DEFAULT_INFO_COLOR);
+        assert_eq!(logger.color(&LogLevel::Debug), DEFAULT_DEBUG_COLOR);
+        assert_eq!(logger.color(&LogLevel::Trace), DEFAULT_TRACE_COLOR);
     }
 }
+
