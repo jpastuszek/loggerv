@@ -266,10 +266,10 @@ impl Logger {
     /// log statements to `stdout` with ERROR and WARN statements printed to `stderr`.
     pub fn verbosity(mut self, v: u64) -> Self {
         self.level = match v {
-                0 => LogLevel::Warn,  // default
-                1 => LogLevel::Info,  // -v
-                2 => LogLevel::Debug, // -vv
-                _ => LogLevel::Trace, // -vvv and above
+            0 => LogLevel::Warn,  // default
+            1 => LogLevel::Info,  // -v
+            2 => LogLevel::Debug, // -vv
+            _ => LogLevel::Trace, // -vvv and above
         };
         self
     }
