@@ -184,10 +184,6 @@ impl Logger {
             Box::new(self)
         })
     }
-
-    fn format_tag(level: &LogLevel, location: &str, line: &str) -> String {
-        format!("{}{}{}", level, location, line)
-    }
 }
 
 impl Log for Logger {
@@ -209,9 +205,11 @@ impl Log for Logger {
                 String::new()
             };
             let tag = if self.colors {
-                level_style(level).paint(Logger::format_tag(&level, &module_path, &line)).to_string()
+                level_style(level)
+                    .paint(format!("{}{}{}", level, module_path, line))
+                    .to_string()
             } else {
-                Logger::format_tag(&level, &module_path, &line)
+                format!("{}{}{}", level, module_path, line)
             };
             if level <= LogLevel::Warn {
                 let _ = writeln!(&mut io::stderr(), "{}{}{}", tag, self.separator, record.args());
