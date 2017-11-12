@@ -92,25 +92,19 @@ pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
 pub const DEFAULT_LINE_NUMBERS: bool = false;
 pub const DEFAULT_MODULE_PATH: bool = true;
 
-fn level_style(l: LogLevel) -> Colour {
-    match l {
-        LogLevel::Error => Colour::Fixed(9), // bright red
-        LogLevel::Warn => Colour::Fixed(11), // bright yellow
-        LogLevel::Info => Colour::Fixed(10), // bright green
-        LogLevel::Debug => Colour::Fixed(7), // light grey
-        LogLevel::Trace => Colour::Fixed(8), // grey
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Logger {
     colors: bool,
     line_numbers: bool,
     level: LogLevel,
     module_path: bool,
-    separator: String, 
+    separator: String,
+    error_color: Colour,
+    warn_color: Colour,
+    info_color: Colour,
+    debug_color: Colour,
+    trace_color: Colour,
 }
-
 
 impl Logger {
     /// Creates a new instance of the verbosity-based logger.
@@ -125,6 +119,52 @@ impl Logger {
             level: DEFAULT_LEVEL, 
             module_path: DEFAULT_MODULE_PATH,
             separator: String::from(DEFAULT_SEPARATOR),
+            error_color: Colour::Fixed(9), // bright red
+            warn_color: Colour::Fixed(11), // bright yellow
+            info_color: Colour::Fixed(10), // bright green
+            debug_color: Colour::Fixed(7), // light grey
+            trace_color: Colour::Fixed(8), // grey
+        }
+    }
+
+    /// Sets the output color for the ERROR level. The default is bright red.
+    pub fn error_color(mut self, c: Colour) -> Self {
+        self.error_color = c;
+        self
+    }
+
+    /// Sets the output color for the WARN level. The default is bright yellow.
+    pub fn warn_color(mut self, c: Colour) -> Self {
+        self.warn_color = c;
+        self
+    }
+
+    /// Sets the output color for the INFO level. The default is bright green.
+    pub fn info_color(mut self, c: Colour) -> Self {
+        self.info_color = c;
+        self
+    }
+
+    /// Sets the output color for the DEBUG level. The default is light grey.
+    pub fn debug_color(mut self, c: Colour) -> Self {
+        self.debug_color = c;
+        self
+    }
+
+    /// Sets the output color for the TRACE level. The default is grey.
+    pub fn trace_color(mut self, c: Colour) -> Self {
+        self.trace_color = c;
+        self
+    }
+
+    /// Gets the color to use for the log statement's tag based on level.
+    fn color(&self, l: &LogLevel) -> Colour {
+        match *l {
+            LogLevel::Error => self.error_color,
+            LogLevel::Warn => self.warn_color,
+            LogLevel::Info => self.info_color,
+            LogLevel::Debug => self.debug_color,
+            LogLevel::Trace => self.trace_color,
         }
     }
 
@@ -215,9 +255,7 @@ impl Log for Logger {
                 String::new()
             };
             let tag = if self.colors {
-                level_style(level)
-                    .paint(format!("{}{}{}", level, module_path, line))
-                    .to_string()
+                self.color(&level).paint(format!("{}{}{}", level, module_path, line)).to_string()
             } else {
                 format!("{}{}{}", level, module_path, line)
             };
