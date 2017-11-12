@@ -1,15 +1,22 @@
 //! A simple `io::stdout` and `io::stderr` writing `Logger` implementation from the
 //! `log` crate, using the `ansi_term` crate for colors and configured at runtime via a verbosity
-//! or at compile time with simple function calls. Designed for simple CLIs.
+//! or at compile time with simple function calls. Designed for simple Command Line Interfaces
+//! (CLIs).
 //!
 //! This library includes a Builder pattern API for configuring a logger and three initializing
 //! helper functions to create a default logger. Ensure you create and initialize only once
 //! a global logger with the Builder pattern API or use one of the three public helper functions
 //! early in your program as shown in the examples below.
 //!
+//! The default configuration colorized the "tag" portion of the log statement, where the tag is
+//! the text to the left of a separator, defaulted as the colon (`:`), the message is the
+//! portion to the right of the separator is _not_ colorized, and the tag includes the log level
+//! and module path.
+//!
 //! ## Example
 //!
-//! The standard example with `clap` as the arg parser using the default configuration.
+//! The standard example with [clap](https://crates.io/crates/clap) as the arg parser using the
+//! default configuration.
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -113,7 +120,8 @@
 //! }
 //! ```
 //!
-//! See the documentation for the log crate for more information about its API.
+//! See the [documentation](https://docs.rs/log/0.3.8/log/) for the
+//! [log](https://crates.io/crates/log) crate for more information about its API.
 //!
 
 extern crate log;
