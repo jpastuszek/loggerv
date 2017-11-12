@@ -88,6 +88,7 @@ use ansi_term::Colour;
 
 pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
+pub const DEFAULT_LINE_NUMBERS: bool = false;
 
 fn level_style(l: LogLevel) -> Colour {
     match l {
@@ -100,6 +101,7 @@ fn level_style(l: LogLevel) -> Colour {
 }
 
 pub struct Logger {
+    line_numbers: bool,
     level: LogLevel,
     colors: bool,
     separator: String, 
@@ -114,6 +116,7 @@ impl Logger {
     pub fn new() -> Logger {
         let colors = atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
         Logger { 
+            line_numbers: DEFAULT_LINE_NUMBERS,
             level: DEFAULT_LEVEL, 
             colors: colors,
             separator: String::from(DEFAULT_SEPARATOR),
@@ -133,6 +136,13 @@ impl Logger {
     /// in a terminal.
     pub fn disable_color(mut self) -> Self {
         self.colors = false;
+        self
+    }
+
+    /// Enables or disables including line numbers in the "tag" portion of the log statement. The
+    /// tag is the text to the left of the separator.
+    pub fn line_numbers(mut self, l: bool) -> Self {
+        self.line_numbers = l;
         self
     }
 
@@ -164,6 +174,10 @@ impl Logger {
             Box::new(self)
         })
     }
+
+    fn format_tag(level: &LogLevel, location: &str, line: &str) -> String {
+        format!("{} [{}]{}", level, location, line)
+    }
 }
 
 impl Log for Logger {
@@ -174,10 +188,16 @@ impl Log for Logger {
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
             let level = record.level();
-            let tag = if self.colors {
-                level_style(level).paint(format!("{} [{}]", level, record.location().module_path())).to_string()
+            let location = record.location().module_path();
+            let line = if self.line_numbers {
+                format!(" (line {})", record.location().line())
             } else {
-                format!("{} [{}]", level, record.location().module_path())
+                String::new()
+            };
+            let tag = if self.colors {
+                level_style(level).paint(Logger::format_tag(&level, &location, &line)).to_string()
+            } else {
+                Logger::format_tag(&level, &location, &line)
             };
             if level <= LogLevel::Warn {
                 let _ = writeln!(&mut io::stderr(), "{}{}{}", tag, self.separator, record.args());
