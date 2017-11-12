@@ -251,8 +251,8 @@ impl Logger {
         self
     }
 
-    /// Explicitly sets the log level instead through a verbosity.
-    pub fn level(mut self, l: LogLevel) -> Self {
+    /// Explicitly sets the log level instead of through a verbosity.
+    pub fn max_level(mut self, l: LogLevel) -> Self {
         self.level = l;
         self
     }
@@ -425,8 +425,8 @@ mod tests {
     }
 
     #[test]
-    fn level_works() {
-        let logger = Logger::new().level(LogLevel::Trace);
+    fn max_level_works() {
+        let logger = Logger::new().max_level(LogLevel::Trace);
         assert_eq!(logger.level, LogLevel::Trace);
     }
 
