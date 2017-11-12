@@ -249,15 +249,15 @@ impl Logger {
 
     /// Enables or disables including line numbers in the "tag" portion of the log statement. The
     /// tag is the text to the left of the separator.
-    pub fn line_numbers(mut self, l: bool) -> Self {
-        self.include_line_numbers = l;
+    pub fn line_numbers(mut self, i: bool) -> Self {
+        self.include_line_numbers = i;
         self
     }
 
     /// Enables or disables including the level in the log statement's tag portion. The tag of the
     /// log statement is the text to the left of the separator.
-    pub fn level(mut self, l: bool) -> Self {
-        self.include_level = l;
+    pub fn level(mut self, i: bool) -> Self {
+        self.include_level = i;
         self
     }
 
@@ -269,8 +269,8 @@ impl Logger {
 
     /// Enables or disables including the module path in the "tag" portion of the log statement.
     /// The tag is the text to the left of the separator.
-    pub fn module_path(mut self, m: bool) -> Self {
-        self.include_module_path = m;
+    pub fn module_path(mut self, i: bool) -> Self {
+        self.include_module_path = i;
         self
     }
 
