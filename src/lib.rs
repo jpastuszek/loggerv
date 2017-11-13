@@ -225,6 +225,10 @@ impl Logger {
     ///
     /// The separator is the string between the "tag" and the message that make up a log statement.
     /// The tag will be colorized if enabled, while the message will not. The default is `: `.
+    ///
+    /// If the level, line numbers, and module path are all _not_ included in the log statement,
+    /// then the separator is changed to the empty string to avoid printing a lone string or
+    /// character before each message portion of the log statement.
     pub fn separator(mut self, s: &str) -> Self {
         self.separator = String::from(s);
         self
@@ -291,7 +295,11 @@ impl Logger {
 
     /// Initializes the logger. 
     ///
-    /// This also consumes the logger. It cannot be further modified after initialization.
+    /// This also consumes the logger. It cannot be further modified after initialization. 
+    ///
+    /// If the tag will be empty because the level, line numbers, and module path were all
+    /// disabled, then the separator is changed to the empty string to avoid writing a long
+    /// character in front of each message for each log statement.
     pub fn init(mut self) -> Result<(), SetLoggerError> {
         // If there is no level, line number, or module path in the tag, then the tag will always
         // be empty. The separator should also be empty so only the message component is printed
