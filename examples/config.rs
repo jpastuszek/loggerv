@@ -24,10 +24,15 @@ fn main() {
             .short("n")
             .long("no-color")
             .help("Disables colorized output"))
+       .arg(Arg::with_name("level")
+            .short("l")
+            .long("level")
+            .help("Adds the log level to the log statements. This will also surround the module path in square brackets."))
        .get_matches();
 
     loggerv::Logger::new()
         .verbosity(args.occurrences_of("v"))
+        .level(args.is_present("level"))
         .line_numbers(args.is_present("debug"))
         .module_path(args.is_present("debug"))
         .colors(!args.is_present("no-color"))

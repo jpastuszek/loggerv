@@ -105,6 +105,7 @@
 //!     // the colors for each log level.
 //!     loggerv::Logger::new()
 //!         .verbosity(args.occurrences_of("v"))
+//!         .level(true)
 //!         .line_numbers(true)
 //!         .separator(" = ")
 //!         .module_path(false)
