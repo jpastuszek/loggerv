@@ -27,31 +27,45 @@ extern crate loggerv;
 
 Clone this repository, then run the following commands to see the log level change:
 
-```
-$ cargo run --example clap
-$ cargo run --example clap -- -v
-$ cargo run --example clap -- -vv
-$ cargo run --example clap -- -vvv
+```bash
+$ cargo run --example quick
+$ cargo run --example quick -- -v
+$ cargo run --example quick -- -vv
+$ cargo run --example quick -- -vvv
 ```
 
 This will run an example that uses the [clap](https://crates.io/crates/clap) argument parser to change the log level at run-time based on the number of `-v` arguments that are passed to the application. As the occurrence of the `-v` argument increases, the number of log statements that are displayed should increase.
 
 Next, run the following commands:
 
-```
-$ cargo run --example config
-$ cargo run --example config -- -v
-$ cargo run --example config -- -vv
-$ cargo run --example config -- -vvv
-$ cargo run --example config -- -vvv
-$ cargo run --example config -- -vvv -l
-$ cargo run --example config -- -vvv -l -d
-$ cargo run --example config -- -vvv -l -d -n
+```bash
+$ cargo run --example compile-time-config
 ```
 
-Similar to the previous example, as the occurrence of the `-v` argument increases, the number of log statements that are displayed should increase. As the various configuration arguments, i.e. `-l`, `-d`, and `-n`, are added, the format of the log statements change. 
+This will run an example that changes the output from defaults at compile-time. The following commands will demonstration configuration at run-time:
 
-For both examples, the `-h,--help` flag can be used to display information about the various flags and their effects on logging and output.
+```bash
+$ cargo run --example run-time-config
+$ cargo run --example run-time-config -- -v
+$ cargo run --example run-time-config -- -vv
+$ cargo run --example run-time-config -- -vvv
+$ cargo run --example run-time-config -- -vvv
+$ cargo run --example run-time-config -- -vvv -l
+$ cargo run --example run-time-config -- -vvv -l -d
+$ cargo run --example run-time-config -- -vvv -l -d --no-module-path
+$ cargo run --example run-time-config -- -vvv -l -d --no-module-path --no-color
+```
+
+Similar to the quick example, as the occurrence of the `-v` argument increases, the number of log statements that are displayed should increase. As the various configuration arguments, i.e. `-l`, `-d`, etc. are added, the format of the log statements change. The `-h,--help` flag can be used to display information about the various flags and their effects on logging and output.
+
+Finally, run the following commands to demonstration build profile configuration:
+
+```bash
+$ cargo run --example cfg-config
+$ cargo run --release --example cfg-config
+```
+
+The number of log statements are displayed based on the build profile, either Debug or Release.
 
 ## [Documentation](http://clux.github.io/loggerv)
 
