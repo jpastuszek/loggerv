@@ -17,9 +17,18 @@ log = "0.3.7"
 clap = "2.1.2"
 
 [[example]]
-name = "clap"
-path = "examples/clap.rs"
+name = "quick"
+path = "examples/quick.rs"
 
 [[example]]
-name = "config"
-path = "examples/config.rs"
+name = "run-time-config"
+path = "examples/run_time_config.rs"
+
+[[example]]
+name = "compile-time-config"
+path = "examples/compile_time_config.rs"
+
+[[example]]
+name = "cfg-config"
+path = "examples/cfg_config.rs"
+
