@@ -20,25 +20,38 @@ Next, add this to the `main.rs` or the file containing the `main` function for y
 
 ```rust
 extern crate loggerv;
+
 ```
 
 ## Getting Started
 
-Clone this repository, then run the following command:
+Clone this repository, then run the following commands to see the log level change:
 
 ```
+$ cargo run --example clap
+$ cargo run --example clap -- -v
+$ cargo run --example clap -- -vv
 $ cargo run --example clap -- -vvv
 ```
 
-This will run an example that uses the [clap](https://crates.io/crates/clap) argument parser to change the log level at run-time based on the number of `-v` arguments that are passed to the application. 
+This will run an example that uses the [clap](https://crates.io/crates/clap) argument parser to change the log level at run-time based on the number of `-v` arguments that are passed to the application. As the occurrence of the `-v` argument increases, the number of log statements that are displayed should increase.
 
-Next, run the following command:
+Next, run the following commands:
 
 ```
-$ cargo run --example config -- -vvv -d -n
+$ cargo run --example config
+$ cargo run --example config -- -v
+$ cargo run --example config -- -vv
+$ cargo run --example config -- -vvv
+$ cargo run --example config -- -vvv
+$ cargo run --example config -- -vvv -l
+$ cargo run --example config -- -vvv -l -d
+$ cargo run --example config -- -vvv -l -d -n
 ```
 
-This will run an example that allows for run-time configuration of output based on command line arguments. For both examples, the `-h,--help` flag can be used to display information about the various flags and their effects on logging and output.
+Similar to the previous example, as the occurrence of the `-v` argument increases, the number of log statements that are displayed should increase. As the various configuration arguments, i.e. `-l`, `-d`, and `-n`, are added, the format of the log statements change. 
+
+For both examples, the `-h,--help` flag can be used to display information about the various flags and their effects on logging and output.
 
 ## [Documentation](http://clux.github.io/loggerv)
 
