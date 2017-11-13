@@ -292,7 +292,18 @@ impl Logger {
     /// Initializes the logger. 
     ///
     /// This also consumes the logger. It cannot be further modified after initialization.
-    pub fn init(self) -> Result<(), SetLoggerError> {
+    pub fn init(mut self) -> Result<(), SetLoggerError> {
+        // If there is no level, line number, or module path in the tag, then the tag will always
+        // be empty. The separator should also be empty so only the message component is printed
+        // for the log statement; otherwise, there is a weird floating colon in front of every log
+        // statement.
+        //
+        // It is better to do it here than in the `log` function because it only has to be
+        // determined once at initialization as opposed to every call to the `log` function. So
+        // a potentially slight performance improvement.
+        if !self.include_level && !self.include_line_numbers && !self.include_module_path {
+            self.separator = String::new();
+        }
         log::set_logger(|max_level| {
             max_level.set(self.level.to_log_level_filter());
             Box::new(self)
