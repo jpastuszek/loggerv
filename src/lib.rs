@@ -221,17 +221,6 @@ impl Logger {
         self
     }
 
-    /// Gets the color to use for the log statement's tag based on level.
-    fn color(&self, l: &LogLevel) -> Colour {
-        match *l {
-            LogLevel::Error => self.error_color,
-            LogLevel::Warn => self.warn_color,
-            LogLevel::Info => self.info_color,
-            LogLevel::Debug => self.debug_color,
-            LogLevel::Trace => self.trace_color,
-        }
-    }
-
     /// Sets the separator string.
     ///
     /// The separator is the string between the "tag" and the message that make up a log statement.
@@ -309,6 +298,49 @@ impl Logger {
             Box::new(self)
         })
     }
+
+    /// Gets the color to use for the log statement's tag based on level.
+    fn color(&self, l: &LogLevel) -> Colour {
+        match *l {
+            LogLevel::Error => self.error_color,
+            LogLevel::Warn => self.warn_color,
+            LogLevel::Info => self.info_color,
+            LogLevel::Debug => self.debug_color,
+            LogLevel::Trace => self.trace_color,
+        }
+    }
+
+    /// Creates the tag portion of the log statement based on the configuration. 
+    ///
+    /// The tag portion is the of the log statement is the text to the left of the separator, while
+    /// the text to the right of the separator is the message.
+    fn create_tag(&self, record: &LogRecord) -> String {
+        let level = record.level();
+        let level_text = if self.include_level {
+            level.to_string()
+        } else {
+            String::new()
+        };
+        let module_path_text = if self.include_module_path {
+            if self.include_level {
+                format!(" [{}]", record.location().module_path())
+            } else {
+                record.location().module_path().to_string()
+            }
+        } else {
+            String::new()
+        };
+        let line_text = if self.include_line_numbers {
+            format!(" (line {})", record.location().line())
+        } else {
+            String::new()
+        };
+        let mut tag = format!("{}{}{}", level_text, module_path_text, line_text);
+        if self.colors {
+            tag = self.color(&level).paint(tag).to_string();
+        }
+        tag
+    }
 }
 
 impl Log for Logger {
@@ -318,40 +350,16 @@ impl Log for Logger {
 
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
-            let level = record.level();
-            let level_text = if self.include_level {
-                level.to_string()
-            } else {
-                String::new()
-            };
-            let module_path_text = if self.include_module_path {
-                if self.include_level {
-                    format!(" [{}]", record.location().module_path())
-                } else {
-                    record.location().module_path().to_string()
-                }
-            } else {
-                String::new()
-            };
-            let line_text = if self.include_line_numbers {
-                format!(" (line {})", record.location().line())
-            } else {
-                String::new()
-            };
-            let mut tag = format!("{}{}{}", level_text, module_path_text, line_text);
-            if self.colors {
-                tag = self.color(&level).paint(tag).to_string();
-            }
-            if level <= LogLevel::Warn {
+            if record.level() <= LogLevel::Warn {
                 writeln!(
                     &mut io::stderr(), 
                     "{}{}{}", 
-                    tag, 
+                    self.create_tag(&record), 
                     self.separator, 
                     record.args()
                 ).expect("Writing to stderr");
             } else {
-                println!("{}{}{}", tag, self.separator, record.args());
+                println!("{}{}{}", self.create_tag(&record), self.separator, record.args());
             }
         }
     }
