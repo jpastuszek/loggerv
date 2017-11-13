@@ -267,10 +267,20 @@ impl Logger {
     }
 
     /// Enables or disables including the module path in the "tag" portion of the log statement.
-    /// The tag is the text to the left of the separator. Default is to include the module path. If
-    /// the level is also included, the module path is surrounded by square brackets.
+    ///
+    /// The tag is the text to the left of the separator. The default is to include the module
+    /// path. Ifthe level is also included, the module path is surrounded by square brackets.
     pub fn module_path(mut self, i: bool) -> Self {
         self.include_module_path = i;
+        self
+    }
+
+    /// Disables the module path in the "tag" portion of the log statement.
+    ///
+    /// The tag is the text to the left of the separator. The default is to include the module
+    /// path.
+    pub fn no_module_path(mut self) -> Self {
+        self.include_module_path = false;
         self
     }
 
