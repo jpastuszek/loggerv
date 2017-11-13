@@ -8,10 +8,10 @@
 //! a global logger with the Builder pattern API or use one of the three public helper functions
 //! early in your program as shown in the examples below.
 //!
-//! The default configuration colorized the "tag" portion of the log statement, where the tag is
-//! the text to the left of a separator, defaulted as the colon (`:`), the message is the
-//! portion to the right of the separator is _not_ colorized, and the tag includes the log level
-//! and module path.
+//! The default configuration colorizes the "tag" portion of the log statement, where the tag is
+//! the text to the left of a separator, defaulted as the colon (`:`). The message is the
+//! portion to the right of the separator and it is _not_ ever colorized. The tag includes only the
+//! module path and the separator by default.
 //!
 //! ## Example
 //!
@@ -47,8 +47,8 @@
 //!
 //! ## Example
 //!
-//! For a compile time switch, all you really need is `log` (for the macros)
-//! and `loggerv` for how to print what's being sent to the macros with the default configuration.
+//! For a compile time switch, all you really need is `log` (for the macros) and `loggerv` for how
+//! to print what's being sent to the macros with the default configuration.
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -65,8 +65,8 @@
 //!
 //! ## Example
 //!
-//! If you don't really care at all you could just use the plain `init_quiet` function
-//! to only show warnings and errors with the default configuration:
+//! If you don't really care at all you could just use the plain `init_quiet` function to only show
+//! warnings and errors with the default configuration:
 //!
 //! ```
 //! #[macro_use] extern crate log;
@@ -165,13 +165,15 @@ impl Logger {
     ///
     /// The default level is WARN. Color is enabled if the parent application or library is running
     /// from a terminal, i.e. running a tty. The default separator is the ": " string. The default
-    /// output format is `LEVEL [module path]: message`. The following default colors are used:
+    /// output format is `module path: message`. The following default colors are used:
     ///
-    /// * Error = Bright Red
-    /// * Warn = Bright Yellow
-    /// * Info = Bright Green
-    /// * Debug = Light Grey
-    /// * Trace = Grey
+    /// | Level | Color         |
+    /// |-------|---------------|
+    /// | Error | Bright Red    |
+    /// | Warn  | Bright Yellow |
+    /// | Info  | Bright Green  |
+    /// | Debug | Light Grey    |
+    /// | Trace | Grey          |
     pub fn new() -> Logger {
         Logger { 
             colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
@@ -240,8 +242,8 @@ impl Logger {
 
     /// Enables or disables colorizing the output. 
     ///
-    /// If the logger is _not_ used in a terminal, then
-    /// the output is _not_ colorized regardless of the parameter value.
+    /// If the logger is _not_ used in a terminal, then the output is _not_ colorized regardless of
+    /// the parameter value.
     pub fn colors(mut self, c: bool) -> Self {
         self.colors = c && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
         self
@@ -256,6 +258,9 @@ impl Logger {
 
     /// Enables or disables including the level in the log statement's tag portion. The tag of the
     /// log statement is the text to the left of the separator.
+    ///
+    /// If the level and the module path are both inculded, then the module path is surrounded by
+    /// square brackets.
     pub fn level(mut self, i: bool) -> Self {
         self.include_level = i;
         self
@@ -268,7 +273,8 @@ impl Logger {
     }
 
     /// Enables or disables including the module path in the "tag" portion of the log statement.
-    /// The tag is the text to the left of the separator.
+    /// The tag is the text to the left of the separator. Default is to include the module path. If
+    /// the level is also included, the module path is surrounded by square brackets.
     pub fn module_path(mut self, i: bool) -> Self {
         self.include_module_path = i;
         self
@@ -295,7 +301,7 @@ impl Logger {
 
     /// Initializes the logger. 
     ///
-    /// This also consumes the logger and cannot no longer be modified after initialization.
+    /// This also consumes the logger. It cannot be further modified after initialization.
     pub fn init(self) -> Result<(), SetLoggerError> {
         log::set_logger(|max_level| {
             max_level.set(self.level.to_log_level_filter());
