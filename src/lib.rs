@@ -502,6 +502,12 @@ mod tests {
     }
 
     #[test]
+    fn no_colors_works() {
+        let logger = Logger::new().no_colors();
+        assert!(!logger.colors);
+    }
+
+    #[test]
     fn line_numbers_works() {
         let logger = Logger::new().line_numbers(true);
         assert!(logger.include_line_numbers);
@@ -522,6 +528,12 @@ mod tests {
     #[test]
     fn module_path_works() {
         let logger = Logger::new().module_path(false);
+        assert!(!logger.include_module_path);
+    }
+
+    #[test]
+    fn no_module_path_works() {
+        let logger = Logger::new().no_module_path();
         assert!(!logger.include_module_path);
     }
 
