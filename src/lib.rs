@@ -359,7 +359,12 @@ impl Log for Logger {
                     record.args()
                 ).expect("Writing to stderr");
             } else {
-                println!("{}{}{}", self.create_tag(&record), self.separator, record.args());
+                println!(
+                    "{}{}{}", 
+                    self.create_tag(&record), 
+                    self.separator, 
+                    record.args()
+                );
             }
         }
     }
