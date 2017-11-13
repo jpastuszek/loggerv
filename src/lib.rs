@@ -237,9 +237,18 @@ impl Logger {
     /// Enables or disables colorizing the output. 
     ///
     /// If the logger is _not_ used in a terminal, then the output is _not_ colorized regardless of
-    /// the parameter value.
+    /// this value.
     pub fn colors(mut self, c: bool) -> Self {
         self.colors = c && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
+        self
+    }
+
+    /// Disables colorizing the output.
+    ///
+    /// The default is to colorize the output unless `stdout` and `stderr` are redirected or piped,
+    /// i.e. not a tty.
+    pub fn no_colors(mut self) -> Self {
+        self. colors = false;
         self
     }
 
