@@ -27,19 +27,19 @@
 //!
 //! fn main() {
 //!     let args = App::new("app")
-//!                    .arg(Arg::with_name("v")
-//!                             .short("v")
-//!                             .multiple(true)
-//!                             .help("Sets the level of verbosity"))
-//!                    .get_matches();
+//!         .arg(Arg::with_name("v")
+//!             .short("v")
+//!             .multiple(true)
+//!             .help("Sets the level of verbosity"))
+//!         .get_matches();
 //!
 //!     loggerv::init_with_verbosity(args.occurrences_of("v")).unwrap();
 //!
-//!     error!("this is always printed");
-//!     warn!("this too, and it's printed to stderr");
-//!     info!("this is optional");  // for ./app -v or higher
-//!     debug!("this is optional"); // for ./app -vv or higher
-//!     trace!("this is optional"); // for ./app -vvv
+//!     error!("This is always printed");
+//!     warn!("This too is always printed to stderr");
+//!     info!("This is optionally printed to stdout");  // for ./app -v or higher
+//!     debug!("This is optionally printed to stdout"); // for ./app -vv or higher
+//!     trace!("This is optionally printed to stdout"); // for ./app -vvv
 //! }
 //! ```
 //!
@@ -58,8 +58,8 @@
 //!
 //! fn main() {
 //!     loggerv::init_with_level(LogLevel::Info).unwrap();
-//!     debug!("this is a debug {}", "message");
-//!     error!("this is printed by default");
+//!     debug!("This is a debug {}", "message"); // Not printed to stdout
+//!     error!("This is printed by default");    // Printed to stderr
 //! }
 //! ```
 //!
@@ -74,8 +74,8 @@
 //!
 //! fn main() {
 //!     loggerv::init_quiet().unwrap();
-//!     info!("hidden");
-//!     error!("this is printed by default");
+//!     info!("Hidden");
+//!     error!("This is printed by default");
 //! }
 //! ```
 //! 
@@ -98,11 +98,6 @@
 //!                             .help("Sets the level of verbosity"))
 //!                    .get_matches();
 //!
-//!     // This will change the log configuration to include line numbers in the "tag" portion of
-//!     // the statement, which is the text to the left of the separator, change the separator from
-//!     // a colon to an equal sign, hide or disable the module path, and disable colorized output.
-//!     // See the Logger documentation for more configuration methods and the ability to change
-//!     // the colors for each log level.
 //!     loggerv::Logger::new()
 //!         .verbosity(args.occurrences_of("v"))
 //!         .level(true)
@@ -113,11 +108,11 @@
 //!         .init()
 //!         .unwrap();
 //!
-//!     error!("this is always printed");
-//!     warn!("this too, and it's printed to stderr");
-//!     info!("this is optional");  // for ./app -v or higher
-//!     debug!("this is optional"); // for ./app -vv or higher
-//!     trace!("this is optional"); // for ./app -vvv
+//!     error!("This is always printed to stderr");
+//!     warn!("This too is always printed to stderr");
+//!     info!("This is optionally printed to stdout");  // for ./app -v or higher
+//!     debug!("This is optionally printed to stdout"); // for ./app -vv or higher
+//!     trace!("This is optionally printed to stdout"); // for ./app -vvv
 //! }
 //! ```
 //!
