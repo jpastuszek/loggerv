@@ -298,9 +298,23 @@ impl Logger {
         self
     }
 
-    /// Sets the offset between the base level and verbosity.
-    pub fn offset(mut self, o: u64) -> Self {
-        self.offset = o;
+    /// Sets the base level.
+    ///
+    /// The base level is the level used with zero (0) verbosity. The default is WARN. So, ERROR
+    /// and WARN statements will be written and INFO statements will be written with a verbosity of
+    /// 1 or greater. If the base level was changed to ERROR, then only ERROR statements will be
+    /// written and WARN statements will be written with a verbosity of 1 or greater. Use this
+    /// adjust the correlation of verbosity, i.e. number of `-v` occurrences, to level.
+    // TODO: Add documentation example to better example
+    pub fn base_level(mut self, b: LogLevel) -> Self {
+        self.offset = match b {
+            LogLevel::Error => 0,
+            LogLevel::Warn => 1,
+            LogLevel::Info => 2,
+            LogLevel::Debug => 3,
+            LogLevel::Trace => 4,
+                
+        };
         self
     }
 
