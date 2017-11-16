@@ -305,7 +305,34 @@ impl Logger {
     /// 1 or greater. If the base level was changed to ERROR, then only ERROR statements will be
     /// written and WARN statements will be written with a verbosity of 1 or greater. Use this
     /// adjust the correlation of verbosity, i.e. number of `-v` occurrences, to level.
-    // TODO: Add documentation example to better example
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// loggerv::Logger::new()
+    ///     .base_level(LogLevel::Error)
+    ///     .verbosity(0)
+    ///     .init()
+    ///     .unwarp();
+    ///
+    /// error!("This is printed");
+    /// warn!("This is not printed");
+    /// info!("This is not printed");
+    /// ```
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// loggerv::Logger::new()
+    ///     .base_level(LogLevel::Info)
+    ///     .verbosity(0)
+    ///     .init()
+    ///     .unwrap();
+    ///
+    /// error!("This is printed")
+    /// warn!("This is also printed")
+    /// info!("This is now printed, too")
+    /// ```
     pub fn base_level(mut self, b: LogLevel) -> Self {
         self.offset = match b {
             LogLevel::Error => 0,
