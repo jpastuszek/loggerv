@@ -309,29 +309,43 @@ impl Logger {
     /// # Example
     ///
     /// ```rust
-    /// loggerv::Logger::new()
-    ///     .base_level(LogLevel::Error)
-    ///     .verbosity(0)
-    ///     .init()
-    ///     .unwarp();
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
     ///
-    /// error!("This is printed");
-    /// warn!("This is not printed");
-    /// info!("This is not printed");
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .base_level(LogLevel::Error)
+    ///         .verbosity(0)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed");
+    ///     warn!("This is not printed");
+    ///     info!("This is not printed");
+    /// }
     /// ```
     ///
     /// # Example
     ///
     /// ```rust
-    /// loggerv::Logger::new()
-    ///     .base_level(LogLevel::Info)
-    ///     .verbosity(0)
-    ///     .init()
-    ///     .unwrap();
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    /// 
+    /// use log::LogLevel;
     ///
-    /// error!("This is printed")
-    /// warn!("This is also printed")
-    /// info!("This is now printed, too")
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .base_level(LogLevel::Info)
+    ///         .verbosity(0)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed");
+    ///     warn!("This is also printed");
+    ///     info!("This is now printed, too");
+    /// }
     /// ```
     pub fn base_level(mut self, b: LogLevel) -> Self {
         self.offset = match b {
@@ -588,6 +602,13 @@ mod tests {
     fn max_level_works() {
         let logger = Logger::new().max_level(LogLevel::Trace);
         assert_eq!(logger.level, LogLevel::Trace);
+        assert!(logger.verbosity.is_none());
+    }
+
+    #[test]
+    fn base_level_works() {
+        let logger = Logger::new().base_level(LogLevel::Info);
+        assert_eq!(logger.offset, 2);
     }
 
     #[test]
@@ -605,7 +626,7 @@ mod tests {
     #[test]
     fn verbosity_works() {
         let logger = Logger::new().verbosity(3);
-        assert_eq!(logger.level, LogLevel::Trace);
+        assert_eq!(logger.verbosity, Some(3));
     }
 
     #[test]
