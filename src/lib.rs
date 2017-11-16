@@ -229,6 +229,24 @@ impl Logger {
     /// If the level, line numbers, and module path are all _not_ included in the log statement,
     /// then the separator is changed to the empty string to avoid printing a lone string or
     /// character before each message portion of the log statement.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .separator(" = ")
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed with an equal sign between the module path and this message");
+    /// }
+    /// ```
     pub fn separator(mut self, s: &str) -> Self {
         self.separator = String::from(s);
         self
@@ -238,6 +256,24 @@ impl Logger {
     ///
     /// If the logger is _not_ used in a terminal, then the output is _not_ colorized regardless of
     /// this value.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .colors(false)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed without any colorization");
+    /// }
+    /// ```
     pub fn colors(mut self, c: bool) -> Self {
         self.colors = c && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr);
         self
@@ -247,13 +283,51 @@ impl Logger {
     ///
     /// The default is to colorize the output unless `stdout` and `stderr` are redirected or piped,
     /// i.e. not a tty.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .no_colors()
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed without any colorization");
+    /// }
+    /// ```
     pub fn no_colors(mut self) -> Self {
         self. colors = false;
         self
     }
 
-    /// Enables or disables including line numbers in the "tag" portion of the log statement. The
-    /// tag is the text to the left of the separator.
+    /// Enables or disables including line numbers in the "tag" portion of the log statement. 
+    ///
+    /// The tag is the text to the left of the separator.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .line_numbers(true)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed with the module path and the line number surrounded by
+    ///     parentheses");
+    /// }
+    /// ```
     pub fn line_numbers(mut self, i: bool) -> Self {
         self.include_line_numbers = i;
         self
@@ -264,12 +338,53 @@ impl Logger {
     ///
     /// If the level and the module path are both inculded, then the module path is surrounded by
     /// square brackets.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .level(true)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed with the 'ERROR' and the module path is surrounded in square
+    ///     brackets");
+    /// }
+    /// ```
     pub fn level(mut self, i: bool) -> Self {
         self.include_level = i;
         self
     }
 
     /// Explicitly sets the log level instead of through a verbosity.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .max_level(LogLevel::Info)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed to stderr");
+    ///     warn!("This is printed to stderr");
+    ///     info!("This is printed to stdout");
+    ///     debug!("This is not printed to stdout");
+    ///     trace!("This is not printed to stdout");
+    /// }
+    /// ```
     pub fn max_level(mut self, l: LogLevel) -> Self {
         self.level = l;
         // It is important to set the Verbosity to None here because later with the `init` method,
@@ -284,6 +399,22 @@ impl Logger {
     ///
     /// The tag is the text to the left of the separator. The default is to include the module
     /// path. Ifthe level is also included, the module path is surrounded by square brackets.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .module_path(false)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed without leading module path and separator");
+    /// }
+    /// ```
     pub fn module_path(mut self, i: bool) -> Self {
         self.include_module_path = i;
         self
@@ -293,6 +424,22 @@ impl Logger {
     ///
     /// The tag is the text to the left of the separator. The default is to include the module
     /// path.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .no_module_path()
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed without leading module path and separator");
+    /// }
+    /// ```
     pub fn no_module_path(mut self) -> Self {
         self.include_module_path = false;
         self
@@ -364,10 +511,29 @@ impl Logger {
     /// A verbosity of zero (0) is the default, which means ERROR and WARN log statements are
     /// printed to `stderr`. No other log statements are printed on any of the standard streams
     /// (`stdout` or `stderr`). As the verbosity is increased, the log level is increased and more
-    /// log statements will be printed to `stdout`. A verbosity of 1 will print INFO log statements
-    /// to `stdout` in addition to ERROR and WARN. A verbosity of 2 will print INFO and DEBUG log
-    /// statements to `stdout`. A verbosity of 3 or higher will print INFO, DEBUG, and TRACE
-    /// log statements to `stdout` with ERROR and WARN statements printed to `stderr`.
+    /// log statements will be printed to `stdout`. 
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .verbosity(1)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed to stderr");
+    ///     warn!("This is printed to stderr");
+    ///     info!("This is printed to stdout");
+    ///     debug!("This is not printed to stdout");
+    ///     trace!("This is not printed to stdout");
+    /// }
+    /// ```
     pub fn verbosity(mut self, v: u64) -> Self {
         self.verbosity = Some(v);
         self
@@ -377,9 +543,55 @@ impl Logger {
     ///
     /// This also consumes the logger. It cannot be further modified after initialization. 
     ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed to stderr");
+    ///     warn!("This is printed to stderr");
+    ///     info!("This is not printed to stdout");
+    ///     debug!("This is not printed to stdout");
+    ///     trace!("This is not printed to stdout");
+    /// }
+    /// ```
+    ///
+    /// # Example
+    ///
     /// If the tag will be empty because the level, line numbers, and module path were all
     /// disabled, then the separator is changed to the empty string to avoid writing a long
     /// character in front of each message for each log statement.
+    ///
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    ///
+    /// use log::LogLevel;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .module_path(false)
+    ///         .level(false) 
+    ///         .line_numbers(false)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed to stderr without the separator");
+    ///     warn!("This is printed to stderr without the separator");
+    ///     info!("This is not printed to stdout");
+    ///     debug!("This is not printed to stdout");
+    ///     trace!("This is not printed to stdout");
+    /// }
+    /// ```
     pub fn init(mut self) -> Result<(), SetLoggerError> {
         // If there is no level, line number, or module path in the tag, then the tag will always
         // be empty. The separator should also be empty so only the message component is printed
