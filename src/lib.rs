@@ -142,6 +142,18 @@ pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
 pub const DEFAULT_WARN_COLOR: Colour = Colour::Fixed(11); // bright yellow
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Output {
+    Stderr,
+    Stdout,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Level {
+    output: Output,
+    color: Colour,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Logger {
     colors: bool,
@@ -152,11 +164,11 @@ pub struct Logger {
     offset: u64,
     separator: String,
     verbosity: Option<u64>,
-    error_color: Colour,
-    warn_color: Colour,
-    info_color: Colour,
-    debug_color: Colour,
-    trace_color: Colour,
+    error: Level,
+    warn: Level,
+    info: Level,
+    debug: Level,
+    trace: Level,
 }
 
 impl Logger {
@@ -183,41 +195,58 @@ impl Logger {
             offset: DEFAULT_OFFSET,
             separator: String::from(DEFAULT_SEPARATOR),
             verbosity: None,
-            error_color: DEFAULT_ERROR_COLOR,
-            warn_color: DEFAULT_WARN_COLOR,
-            info_color: DEFAULT_INFO_COLOR,
-            debug_color: DEFAULT_DEBUG_COLOR,
-            trace_color: DEFAULT_TRACE_COLOR,
+            error: Level {
+                output: Output::Stderr,
+                color: DEFAULT_ERROR_COLOR,
+            },
+            warn: Level {
+                output: Output::Stderr,
+                color: DEFAULT_WARN_COLOR,
+            },
+            info: Level {
+                output: Output::Stdout,
+                color: DEFAULT_INFO_COLOR,
+            },
+            debug: Level {
+                output: Output::Stdout,
+                color: DEFAULT_DEBUG_COLOR,
+            },
+            trace: Level {
+                output: Output::Stdout,
+                color: DEFAULT_TRACE_COLOR,
+            }
         }
     }
 
-    /// Sets the output color for the ERROR level. The default is bright red.
-    pub fn error_color(mut self, c: Colour) -> Self {
-        self.error_color = c;
-        self
-    }
-
-    /// Sets the output color for the WARN level. The default is bright yellow.
-    pub fn warn_color(mut self, c: Colour) -> Self {
-        self.warn_color = c;
-        self
-    }
-
-    /// Sets the output color for the INFO level. The default is bright green.
-    pub fn info_color(mut self, c: Colour) -> Self {
-        self.info_color = c;
-        self
-    }
-
-    /// Sets the output color for the DEBUG level. The default is light grey.
-    pub fn debug_color(mut self, c: Colour) -> Self {
-        self.debug_color = c;
-        self
-    }
-
-    /// Sets the output color for the TRACE level. The default is grey.
-    pub fn trace_color(mut self, c: Colour) -> Self {
-        self.trace_color = c;
+    /// Sets the color for a level.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    /// extern crate ansi_term;
+    ///
+    /// use log::LogLevel;
+    /// use ansi_term::Colour;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .color(&LogLevel::Error, Colour::Fixed(7))
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed in light grey instead of bright red");
+    /// }
+    /// ```
+    pub fn color(mut self, l: &LogLevel, c: Colour) -> Self {
+        match *l {
+            LogLevel::Error => self.error.color = c,
+            LogLevel::Warn => self.warn.color = c,
+            LogLevel::Info => self.info.color = c,
+            LogLevel::Debug => self.debug.color = c,
+            LogLevel::Trace => self.trace.color = c,
+        }
         self
     }
 
@@ -506,6 +535,49 @@ impl Logger {
         self
     }
 
+    /// Sets the output for a level.
+    ///
+    /// The output is either `stderr` or `stdout`. The default is for ERROR and WARN to be written
+    /// to `stdout` and INFO, DEBUG, and TRACE to stdout.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// #[macro_use] extern crate log;
+    /// extern crate loggerv;
+    /// 
+    /// use log::LogLevel;
+    /// use loggerv::Output;
+    ///
+    /// fn main() {
+    ///     loggerv::Logger::new()
+    ///         .output(&LogLevel::Error, Output::Stdout)
+    ///         .output(&LogLevel::Warn, Output::Stdout)
+    ///         .output(&LogLevel::Info, Output::Stderr)
+    ///         .output(&LogLevel::Debug, Output::Stderr)
+    ///         .output(&LogLevel::Trace, Output::Stderr)
+    ///         .verbosity(0)
+    ///         .init()
+    ///         .unwrap();
+    ///
+    ///     error!("This is printed on stdout instead of stderr");
+    ///     warn!("This is printed on stdout instead of stderr");
+    ///     info!("This is printed on stderr instead of stdout");
+    ///     debug!("This is printed on stderr instead of stdout");
+    ///     trace!("This is printed on stderr instead of stdout");
+    /// }
+    /// ```
+    pub fn output(mut self, l: &LogLevel, o: Output) -> Self {
+        match *l {
+            LogLevel::Error => self.error.output = o,
+            LogLevel::Warn => self.warn.output = o,
+            LogLevel::Info => self.info.output = o,
+            LogLevel::Debug => self.debug.output = o,
+            LogLevel::Trace => self.trace.output = o,
+        }
+        self
+    }
+
     /// Sets the level based on verbosity and the offset.
     ///
     /// A verbosity of zero (0) is the default, which means ERROR and WARN log statements are
@@ -629,13 +701,24 @@ impl Logger {
     }
 
     /// Gets the color to use for the log statement's tag based on level.
-    fn color(&self, l: &LogLevel) -> Colour {
+    fn select_color(&self, l: &LogLevel) -> Colour {
         match *l {
-            LogLevel::Error => self.error_color,
-            LogLevel::Warn => self.warn_color,
-            LogLevel::Info => self.info_color,
-            LogLevel::Debug => self.debug_color,
-            LogLevel::Trace => self.trace_color,
+            LogLevel::Error => self.error.color,
+            LogLevel::Warn => self.warn.color,
+            LogLevel::Info => self.info.color,
+            LogLevel::Debug => self.debug.color,
+            LogLevel::Trace => self.trace.color,
+        }
+    }
+
+    /// Gets the output stream to use for the level.
+    fn select_output(&self, l: &LogLevel) -> Output {
+        match *l {
+            LogLevel::Error => self.error.output,
+            LogLevel::Warn => self.warn.output,
+            LogLevel::Info => self.info.output,
+            LogLevel::Debug => self.debug.output,
+            LogLevel::Trace => self.trace.output,
         }
     }
 
@@ -666,7 +749,7 @@ impl Logger {
         };
         let mut tag = format!("{}{}{}", level_text, module_path_text, line_text);
         if self.colors {
-            tag = self.color(&level).paint(tag).to_string();
+            tag = self.select_color(&level).paint(tag).to_string();
         }
         tag
     }
@@ -679,21 +762,24 @@ impl Log for Logger {
 
     fn log(&self, record: &LogRecord) {
         if self.enabled(record.metadata()) {
-            if record.level() <= LogLevel::Warn {
-                writeln!(
-                    &mut io::stderr(), 
-                    "{}{}{}", 
-                    self.create_tag(&record), 
-                    self.separator, 
-                    record.args()
-                ).expect("Writing to stderr");
-            } else {
-                println!(
-                    "{}{}{}", 
-                    self.create_tag(&record), 
-                    self.separator, 
-                    record.args()
-                );
+            match self.select_output(&record.level()) {
+                Output::Stderr => {
+                    writeln!(
+                        &mut io::stderr(), 
+                        "{}{}{}", 
+                        self.create_tag(&record), 
+                        self.separator, 
+                        record.args()
+                    ).expect("Writing to stderr");
+                },
+                Output::Stdout => {
+                    println!(
+                        "{}{}{}", 
+                        self.create_tag(&record), 
+                        self.separator, 
+                        record.args()
+                    );
+                },
             }
         }
     }
@@ -742,41 +828,17 @@ mod tests {
         assert_eq!(logger.colors, DEFAULT_COLORS);
         assert_eq!(logger.level, DEFAULT_LEVEL);
         assert_eq!(logger.separator, String::from(DEFAULT_SEPARATOR));
-        assert_eq!(logger.error_color, DEFAULT_ERROR_COLOR);
-        assert_eq!(logger.warn_color, DEFAULT_WARN_COLOR);
-        assert_eq!(logger.info_color, DEFAULT_INFO_COLOR);
-        assert_eq!(logger.debug_color, DEFAULT_DEBUG_COLOR);
-        assert_eq!(logger.trace_color, DEFAULT_TRACE_COLOR);
+        assert_eq!(logger.error.color, DEFAULT_ERROR_COLOR);
+        assert_eq!(logger.warn.color, DEFAULT_WARN_COLOR);
+        assert_eq!(logger.info.color, DEFAULT_INFO_COLOR);
+        assert_eq!(logger.debug.color, DEFAULT_DEBUG_COLOR);
+        assert_eq!(logger.trace.color, DEFAULT_TRACE_COLOR);
     }
 
     #[test]
-    fn error_color_works() {
-        let logger = Logger::new().error_color(Colour::Fixed(8));
-        assert_eq!(logger.error_color, Colour::Fixed(8));
-    }
-
-    #[test]
-    fn warn_color_works() {
-        let logger = Logger::new().warn_color(Colour::Fixed(8));
-        assert_eq!(logger.warn_color, Colour::Fixed(8));
-    }
-
-    #[test]
-    fn info_color_works() {
-        let logger = Logger::new().info_color(Colour::Fixed(8));
-        assert_eq!(logger.info_color, Colour::Fixed(8));
-    }
-
-    #[test]
-    fn debug_color_works() {
-        let logger = Logger::new().debug_color(Colour::Fixed(8));
-        assert_eq!(logger.debug_color, Colour::Fixed(8));
-    }
-
-    #[test]
-    fn trace_color_works() {
-        let logger = Logger::new().trace_color(Colour::Fixed(11));
-        assert_eq!(logger.trace_color, Colour::Fixed(11));
+    fn color_works() {
+        let logger = Logger::new().color(&LogLevel::Trace, Colour::Fixed(11));
+        assert_eq!(logger.trace.color, Colour::Fixed(11));
     }
 
     #[test]
@@ -842,19 +904,34 @@ mod tests {
     }
 
     #[test]
+    fn output_works() {
+        let logger = Logger::new()
+            .output(&LogLevel::Error, Output::Stdout)
+            .output(&LogLevel::Warn, Output::Stdout)
+            .output(&LogLevel::Info, Output::Stderr)
+            .output(&LogLevel::Debug, Output::Stderr)
+            .output(&LogLevel::Trace, Output::Stderr);
+        assert_eq!(logger.error.output, Output::Stdout);
+        assert_eq!(logger.warn.output, Output::Stdout);
+        assert_eq!(logger.info.output, Output::Stderr);
+        assert_eq!(logger.debug.output, Output::Stderr);
+        assert_eq!(logger.trace.output, Output::Stderr);
+    }
+
+    #[test]
     fn init_works() {
         let result = Logger::new().init();
         assert!(result.is_ok());
     }
 
     #[test]
-    fn color_works() {
+    fn select_color_works() {
         let logger = Logger::new();
-        assert_eq!(logger.color(&LogLevel::Error), DEFAULT_ERROR_COLOR);
-        assert_eq!(logger.color(&LogLevel::Warn), DEFAULT_WARN_COLOR);
-        assert_eq!(logger.color(&LogLevel::Info), DEFAULT_INFO_COLOR);
-        assert_eq!(logger.color(&LogLevel::Debug), DEFAULT_DEBUG_COLOR);
-        assert_eq!(logger.color(&LogLevel::Trace), DEFAULT_TRACE_COLOR);
+        assert_eq!(logger.select_color(&LogLevel::Error), DEFAULT_ERROR_COLOR);
+        assert_eq!(logger.select_color(&LogLevel::Warn), DEFAULT_WARN_COLOR);
+        assert_eq!(logger.select_color(&LogLevel::Info), DEFAULT_INFO_COLOR);
+        assert_eq!(logger.select_color(&LogLevel::Debug), DEFAULT_DEBUG_COLOR);
+        assert_eq!(logger.select_color(&LogLevel::Trace), DEFAULT_TRACE_COLOR);
     }
 }
 
