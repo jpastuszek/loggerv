@@ -609,10 +609,10 @@ impl Logger {
         // `max_level` method is used, then the `DEFAULT_LEVEL` is used because it is set with the
         // `new` function. It makes more sense to calculate the level based on verbosity _after_
         // all configuration methods have been called as opposed to during the call to the
-        // `verbosity` method. This change enables the offset feature so that the `offset` method
-        // can be used at any time during the "building" procedure before the call to `init`.
-        // Otherwise, calling the `offset` _after_ the `verbosity` method would have no effect and
-        // be difficult to communicate this limitation to users.
+        // `verbosity` method. This change enables the offset feature so that the `max_level`
+        // method can be used at any time during the "building" procedure before the call to
+        // `init`. Otherwise, calling the `max_level` _after_ the `verbosity` method would have no
+        // effect and be difficult to communicate this limitation to users.
         if let Some(v) = self.verbosity {
             self.level = match v + self.offset {
                 0 => LogLevel::Error,  
