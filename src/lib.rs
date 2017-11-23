@@ -538,7 +538,7 @@ impl Logger {
     /// Sets the output for a level.
     ///
     /// The output is either `stderr` or `stdout`. The default is for ERROR and WARN to be written
-    /// to `stdout` and INFO, DEBUG, and TRACE to stdout.
+    /// to `stderr` and INFO, DEBUG, and TRACE to `stdout`.
     ///
     /// # Example
     ///
