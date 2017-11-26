@@ -4,8 +4,8 @@
 //! The default output is `module::path: message`, and the "tag", which is the text to the left of
 //! the colon, is colorized. This example shows how to change the output based on a conditional
 //! compilation, such as a Debug versus Release build. In a Debug build, the default output is
-//! used with a maximum level of Trace. In a Release build, the module path is replaced with the
-//! level and the maximum level is limited to Info.
+//! used with a maximum level of TRACE. In a Release build, the module path is replaced with the
+//! level and the maximum level is limited to INFO.
 //!
 //! The [clap](https://crates.io/crates/clap) argument parser is used in this example, but loggerv
 //! works with any argument parser.

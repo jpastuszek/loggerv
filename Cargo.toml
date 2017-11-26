@@ -4,10 +4,11 @@ authors = ["Eirik Albrigtsen <sszynrae@gmail.com>",
 description = "A simple log implementation that logs to stdout and stderr with colors"
 documentation = "http://clux.github.io/loggerv"
 keywords = ["log", "logger", "stdio", "cli"]
+categories = ["command-line-utilties"]
 license = "MIT"
 name = "loggerv"
 repository = "https://github.com/clux/loggerv"
-version = "0.5.1"
+version = "0.6.0"
 readme = "README.md"
 
 [dependencies]
@@ -33,4 +34,8 @@ path = "examples/compile_time_config.rs"
 [[example]]
 name = "cfg-config"
 path = "examples/cfg_config.rs"
+
+[[example]]
+name = "output-config"
+path = "examples/output_config.rs"
 
