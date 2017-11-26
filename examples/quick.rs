@@ -2,7 +2,7 @@
 //! line arguments.
 //!
 //! The default output is `module::path: message`, and the "tag", which is the text to the left of
-//! the colon, is colorized. This examples allows the user to dynamically change the output based
+//! the colon, is colorized. This example allows the user to dynamically change the output based
 //! on command line arguments.
 //!
 //! The [clap](https://crates.io/crates/clap) argument parser is used in this example, but loggerv
