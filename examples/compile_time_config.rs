@@ -12,11 +12,9 @@ extern crate ansi_term;
 #[macro_use] extern crate log;
 extern crate loggerv;
 
-use log::LogLevel;
-
 fn main() {
     // Add the following line near the beginning of the main function for an application to enable
-    // colorized output on Windows 10. 
+    // colorized output on Windows 10.
     //
     // Based on documentation for the ansi_term crate, Windows 10 supports ANSI escape characters,
     // but it must be enabled first using the `ansi_term::enable_ansi_support()` function. It is
@@ -25,13 +23,13 @@ fn main() {
     #[cfg(windows)] ansi_term::enable_ansi_support().unwrap();
 
     loggerv::Logger::new()
-        .max_level(LogLevel::Info)
+        .max_level(log::Level::Info)
         .level(true)
         .no_module_path()
         .no_colors()
         .init()
         .unwrap();
-    
+
     error!("This is printed to stderr with this configuration");
     warn!("This is printed to stderr with this configuration");
     info!("This is printed to stdout with this configuration");

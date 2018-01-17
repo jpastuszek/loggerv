@@ -2,7 +2,7 @@
 //! the output stream for the INFO, DEBUG, and TRACE levels from `stdout` to `stderr`.
 //!
 //! The default output stream for INFO, DEBUG, and TRACE levels is `stdout`. This example
-//! demonstrates changing from the defaults at run-time, but it can also be done at compile-time. 
+//! demonstrates changing from the defaults at run-time, but it can also be done at compile-time.
 //!
 //! The [clap](https://crates.io/crates/clap) argument parser is used in this example, but loggerv
 //! works with any argument parser.
@@ -13,12 +13,11 @@ extern crate loggerv;
 extern crate clap;
 
 use clap::{Arg, App};
-use log::LogLevel;
 use loggerv::Output;
 
 fn main() {
     // Add the following line near the beginning of the main function for an application to enable
-    // colorized output on Windows 10. 
+    // colorized output on Windows 10.
     //
     // Based on documentation for the ansi_term crate, Windows 10 supports ANSI escape characters,
     // but it must be enabled first using the `ansi_term::enable_ansi_support()` function. It is
@@ -39,9 +38,9 @@ fn main() {
 
     if args.is_present("debug") {
         loggerv::Logger::new()
-            .output(&LogLevel::Info, Output::Stderr)
-            .output(&LogLevel::Debug, Output::Stderr)
-            .output(&LogLevel::Trace, Output::Stderr)
+            .output(&log::Level::Info, Output::Stderr)
+            .output(&log::Level::Debug, Output::Stderr)
+            .output(&log::Level::Trace, Output::Stderr)
     } else {
         loggerv::Logger::new()
     }.verbosity(args.occurrences_of("v"))
