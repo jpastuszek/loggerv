@@ -711,7 +711,7 @@ impl Logger {
         };
 
         let module_path_text = if self.include_module_path {
-            let pth = record.module_path().unwrap_or("missing");
+            let pth = record.module_path().unwrap_or("unknown");
             if self.include_level {
                 format!(" [{}]", pth)
             } else {
