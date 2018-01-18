@@ -12,7 +12,7 @@ First, add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-log = "0.3"
+log = "0.4"
 loggerv = "0.6"
 ```
 

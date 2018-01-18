@@ -54,10 +54,10 @@
 //! #[macro_use] extern crate log;
 //! extern crate loggerv;
 //!
-//! use log::LogLevel;
+//! use log::Level;
 //!
 //! fn main() {
-//!     loggerv::init_with_level(LogLevel::Info).unwrap();
+//!     loggerv::init_with_level(Level::Info).unwrap();
 //!     debug!("This is a debug {}", "message"); // Not printed to stdout
 //!     error!("This is printed by default");    // Printed to stderr
 //! }
@@ -78,7 +78,7 @@
 //!     error!("This is printed by default");
 //! }
 //! ```
-//! 
+//!
 //! ## Example
 //!
 //! If you want to configure the output, the Builder pattern API can be used.
@@ -116,7 +116,7 @@
 //! }
 //! ```
 //!
-//! See the [documentation](https://docs.rs/log/0.3.8/log/) for the
+//! See the [documentation](https://docs.rs/log/0.4.1/log/) for the
 //! [log](https://crates.io/crates/log) crate for more information about its API.
 //!
 
@@ -125,7 +125,7 @@ extern crate log;
 extern crate atty;
 extern crate ansi_term;
 
-use log::{Log, LogLevel, LogMetadata, LogRecord, SetLoggerError};
+use log::{SetLoggerError};
 use std::io::{self, Write};
 use ansi_term::Colour;
 
@@ -136,7 +136,7 @@ pub const DEFAULT_INCLUDE_LEVEL: bool = false;
 pub const DEFAULT_INCLUDE_LINE_NUMBERS: bool = false;
 pub const DEFAULT_INCLUDE_MODULE_PATH: bool = true;
 pub const DEFAULT_INFO_COLOR: Colour = Colour::Fixed(10); // bright green
-pub const DEFAULT_LEVEL: LogLevel = LogLevel::Warn;
+pub const DEFAULT_LEVEL: log::Level = log::Level::Warn;
 pub const DEFAULT_OFFSET: u64 = 1;
 pub const DEFAULT_SEPARATOR: &str = ": ";
 pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
@@ -160,7 +160,7 @@ pub struct Logger {
     include_level: bool,
     include_line_numbers: bool,
     include_module_path: bool,
-    level: LogLevel,
+    level: log::Level,
     offset: u64,
     separator: String,
     verbosity: Option<u64>,
@@ -186,12 +186,12 @@ impl Logger {
     /// | Debug | Light Grey    |
     /// | Trace | Grey          |
     pub fn new() -> Logger {
-        Logger { 
+        Logger {
             colors: DEFAULT_COLORS && atty::is(atty::Stream::Stdout) && atty::is(atty::Stream::Stderr),
             include_level: DEFAULT_INCLUDE_LEVEL,
             include_line_numbers: DEFAULT_INCLUDE_LINE_NUMBERS,
             include_module_path: DEFAULT_INCLUDE_MODULE_PATH,
-            level: DEFAULT_LEVEL, 
+            level: DEFAULT_LEVEL,
             offset: DEFAULT_OFFSET,
             separator: String::from(DEFAULT_SEPARATOR),
             verbosity: None,
@@ -227,25 +227,25 @@ impl Logger {
     /// extern crate loggerv;
     /// extern crate ansi_term;
     ///
-    /// use log::LogLevel;
+    /// use log::Level;
     /// use ansi_term::Colour;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
-    ///         .color(&LogLevel::Error, Colour::Fixed(7))
+    ///         .color(&Level::Error, Colour::Fixed(7))
     ///         .init()
     ///         .unwrap();
     ///
     ///     error!("This is printed in light grey instead of bright red");
     /// }
     /// ```
-    pub fn color(mut self, l: &LogLevel, c: Colour) -> Self {
+    pub fn color(mut self, l: &log::Level, c: Colour) -> Self {
         match *l {
-            LogLevel::Error => self.error.color = c,
-            LogLevel::Warn => self.warn.color = c,
-            LogLevel::Info => self.info.color = c,
-            LogLevel::Debug => self.debug.color = c,
-            LogLevel::Trace => self.trace.color = c,
+            log::Level::Error => self.error.color = c,
+            log::Level::Warn => self.warn.color = c,
+            log::Level::Info => self.info.color = c,
+            log::Level::Debug => self.debug.color = c,
+            log::Level::Trace => self.trace.color = c,
         }
         self
     }
@@ -265,8 +265,6 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
     ///         .separator(" = ")
@@ -281,7 +279,7 @@ impl Logger {
         self
     }
 
-    /// Enables or disables colorizing the output. 
+    /// Enables or disables colorizing the output.
     ///
     /// If the logger is _not_ used in a terminal, then the output is _not_ colorized regardless of
     /// this value.
@@ -291,8 +289,6 @@ impl Logger {
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    ///
-    /// use log::LogLevel;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
@@ -319,8 +315,6 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
     ///         .no_colors()
@@ -335,7 +329,7 @@ impl Logger {
         self
     }
 
-    /// Enables or disables including line numbers in the "tag" portion of the log statement. 
+    /// Enables or disables including line numbers in the "tag" portion of the log statement.
     ///
     /// The tag is the text to the left of the separator.
     ///
@@ -344,8 +338,6 @@ impl Logger {
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    ///
-    /// use log::LogLevel;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
@@ -374,8 +366,6 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
     ///         .level(true)
@@ -399,11 +389,9 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
-    ///         .max_level(LogLevel::Info)
+    ///         .max_level(log::Level::Info)
     ///         .init()
     ///         .unwrap();
     ///
@@ -414,7 +402,7 @@ impl Logger {
     ///     trace!("This is not printed to stdout");
     /// }
     /// ```
-    pub fn max_level(mut self, l: LogLevel) -> Self {
+    pub fn max_level(mut self, l: log::Level) -> Self {
         self.level = l;
         // It is important to set the Verbosity to None here because later with the `init` method,
         // a `None` value indicates the verbosity has _not_ been set or overriden by using this
@@ -488,11 +476,9 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
-    ///         .base_level(LogLevel::Error)
+    ///         .base_level(log::Level::Error)
     ///         .verbosity(0)
     ///         .init()
     ///         .unwrap();
@@ -508,12 +494,10 @@ impl Logger {
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    /// 
-    /// use log::LogLevel;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
-    ///         .base_level(LogLevel::Info)
+    ///         .base_level(log::Level::Info)
     ///         .verbosity(0)
     ///         .init()
     ///         .unwrap();
@@ -523,14 +507,14 @@ impl Logger {
     ///     info!("This is now printed, too");
     /// }
     /// ```
-    pub fn base_level(mut self, b: LogLevel) -> Self {
+    pub fn base_level(mut self, b: log::Level) -> Self {
         self.offset = match b {
-            LogLevel::Error => 0,
-            LogLevel::Warn => 1,
-            LogLevel::Info => 2,
-            LogLevel::Debug => 3,
-            LogLevel::Trace => 4,
-                
+            log::Level::Error => 0,
+            log::Level::Warn => 1,
+            log::Level::Info => 2,
+            log::Level::Debug => 3,
+            log::Level::Trace => 4,
+
         };
         self
     }
@@ -545,17 +529,17 @@ impl Logger {
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    /// 
-    /// use log::LogLevel;
+    ///
+    /// use log::Level;
     /// use loggerv::Output;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
-    ///         .output(&LogLevel::Error, Output::Stdout)
-    ///         .output(&LogLevel::Warn, Output::Stdout)
-    ///         .output(&LogLevel::Info, Output::Stderr)
-    ///         .output(&LogLevel::Debug, Output::Stderr)
-    ///         .output(&LogLevel::Trace, Output::Stderr)
+    ///         .output(&Level::Error, Output::Stdout)
+    ///         .output(&Level::Warn, Output::Stdout)
+    ///         .output(&Level::Info, Output::Stderr)
+    ///         .output(&Level::Debug, Output::Stderr)
+    ///         .output(&Level::Trace, Output::Stderr)
     ///         .verbosity(0)
     ///         .init()
     ///         .unwrap();
@@ -567,13 +551,13 @@ impl Logger {
     ///     trace!("This is printed on stderr instead of stdout");
     /// }
     /// ```
-    pub fn output(mut self, l: &LogLevel, o: Output) -> Self {
+    pub fn output(mut self, l: &log::Level, o: Output) -> Self {
         match *l {
-            LogLevel::Error => self.error.output = o,
-            LogLevel::Warn => self.warn.output = o,
-            LogLevel::Info => self.info.output = o,
-            LogLevel::Debug => self.debug.output = o,
-            LogLevel::Trace => self.trace.output = o,
+            log::Level::Error => self.error.output = o,
+            log::Level::Warn => self.warn.output = o,
+            log::Level::Info => self.info.output = o,
+            log::Level::Debug => self.debug.output = o,
+            log::Level::Trace => self.trace.output = o,
         }
         self
     }
@@ -583,15 +567,13 @@ impl Logger {
     /// A verbosity of zero (0) is the default, which means ERROR and WARN log statements are
     /// printed to `stderr`. No other log statements are printed on any of the standard streams
     /// (`stdout` or `stderr`). As the verbosity is increased, the log level is increased and more
-    /// log statements will be printed to `stdout`. 
+    /// log statements will be printed to `stdout`.
     ///
     /// # Example
     ///
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    ///
-    /// use log::LogLevel;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
@@ -611,17 +593,15 @@ impl Logger {
         self
     }
 
-    /// Initializes the logger. 
+    /// Initializes the logger.
     ///
-    /// This also consumes the logger. It cannot be further modified after initialization. 
+    /// This also consumes the logger. It cannot be further modified after initialization.
     ///
     /// # Example
     ///
     /// ```rust
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
-    ///
-    /// use log::LogLevel;
     ///
     /// fn main() {
     ///     loggerv::Logger::new()
@@ -647,12 +627,10 @@ impl Logger {
     /// #[macro_use] extern crate log;
     /// extern crate loggerv;
     ///
-    /// use log::LogLevel;
-    ///
     /// fn main() {
     ///     loggerv::Logger::new()
     ///         .module_path(false)
-    ///         .level(false) 
+    ///         .level(false)
     ///         .line_numbers(false)
     ///         .init()
     ///         .unwrap();
@@ -687,63 +665,67 @@ impl Logger {
         // effect and be difficult to communicate this limitation to users.
         if let Some(v) = self.verbosity {
             self.level = match v + self.offset {
-                0 => LogLevel::Error,  
-                1 => LogLevel::Warn,  
-                2 => LogLevel::Info,  
-                3 => LogLevel::Debug, 
-                _ => LogLevel::Trace, 
+                0 => log::Level::Error,
+                1 => log::Level::Warn,
+                2 => log::Level::Info,
+                3 => log::Level::Debug,
+                _ => log::Level::Trace,
             };
         }
-        log::set_logger(|max_level| {
-            max_level.set(self.level.to_log_level_filter());
-            Box::new(self)
-        })
+        log::set_max_level(self.level.to_level_filter());
+        log::set_boxed_logger(Box::new(self))
     }
 
     /// Gets the color to use for the log statement's tag based on level.
-    fn select_color(&self, l: &LogLevel) -> Colour {
+    fn select_color(&self, l: &log::Level) -> Colour {
         match *l {
-            LogLevel::Error => self.error.color,
-            LogLevel::Warn => self.warn.color,
-            LogLevel::Info => self.info.color,
-            LogLevel::Debug => self.debug.color,
-            LogLevel::Trace => self.trace.color,
+            log::Level::Error => self.error.color,
+            log::Level::Warn => self.warn.color,
+            log::Level::Info => self.info.color,
+            log::Level::Debug => self.debug.color,
+            log::Level::Trace => self.trace.color,
         }
     }
 
     /// Gets the output stream to use for the level.
-    fn select_output(&self, l: &LogLevel) -> Output {
+    fn select_output(&self, l: &log::Level) -> Output {
         match *l {
-            LogLevel::Error => self.error.output,
-            LogLevel::Warn => self.warn.output,
-            LogLevel::Info => self.info.output,
-            LogLevel::Debug => self.debug.output,
-            LogLevel::Trace => self.trace.output,
+            log::Level::Error => self.error.output,
+            log::Level::Warn => self.warn.output,
+            log::Level::Info => self.info.output,
+            log::Level::Debug => self.debug.output,
+            log::Level::Trace => self.trace.output,
         }
     }
 
-    /// Creates the tag portion of the log statement based on the configuration. 
+    /// Creates the tag portion of the log statement based on the configuration.
     ///
     /// The tag portion is the of the log statement is the text to the left of the separator, while
     /// the text to the right of the separator is the message.
-    fn create_tag(&self, record: &LogRecord) -> String {
+    fn create_tag(&self, record: &log::Record) -> String {
         let level = record.level();
         let level_text = if self.include_level {
             level.to_string()
         } else {
             String::new()
         };
+
         let module_path_text = if self.include_module_path {
+            let pth = record.module_path().unwrap_or("unknown");
             if self.include_level {
-                format!(" [{}]", record.location().module_path())
+                format!(" [{}]", pth)
             } else {
-                record.location().module_path().to_string()
+                pth.into()
             }
         } else {
             String::new()
         };
         let line_text = if self.include_line_numbers {
-            format!(" (line {})", record.location().line())
+            if let Some(l) = record.line() {
+                format!(" (line {})", l)
+            } else {
+                String::new()
+            }
         } else {
             String::new()
         };
@@ -755,33 +737,36 @@ impl Logger {
     }
 }
 
-impl Log for Logger {
-    fn enabled(&self, metadata: &LogMetadata) -> bool {
+impl log::Log for Logger {
+    fn enabled(&self, metadata: &log::Metadata) -> bool {
         metadata.level() <= self.level
     }
 
-    fn log(&self, record: &LogRecord) {
+    fn log(&self, record: &log::Record) {
         if self.enabled(record.metadata()) {
             match self.select_output(&record.level()) {
                 Output::Stderr => {
                     writeln!(
-                        &mut io::stderr(), 
-                        "{}{}{}", 
-                        self.create_tag(&record), 
-                        self.separator, 
+                        &mut io::stderr(),
+                        "{}{}{}",
+                        self.create_tag(&record),
+                        self.separator,
                         record.args()
                     ).expect("Writing to stderr");
                 },
                 Output::Stdout => {
                     println!(
-                        "{}{}{}", 
-                        self.create_tag(&record), 
-                        self.separator, 
+                        "{}{}{}",
+                        self.create_tag(&record),
+                        self.separator,
                         record.args()
                     );
                 },
             }
         }
+    }
+    fn flush(&self) {
+        // println! flushes by itself
     }
 }
 
@@ -794,7 +779,7 @@ impl Default for Logger {
 /// Initialize loggerv with a maximal log level.
 ///
 /// See the main loggerv documentation page for an example.
-pub fn init_with_level(level: LogLevel) -> Result<(), SetLoggerError> {
+pub fn init_with_level(level: log::Level) -> Result<(), SetLoggerError> {
     Logger::new().max_level(level).init()
 }
 
@@ -810,12 +795,12 @@ pub fn init_with_verbosity(verbosity: u64) -> Result<(), SetLoggerError> {
 ///
 /// See the main loggerv documentation page for an example.
 pub fn init_quiet() -> Result<(), SetLoggerError> {
-    init_with_level(LogLevel::Warn)
+    init_with_level(log::Level::Warn)
 }
 
 #[cfg(test)]
 mod tests {
-    use log::LogLevel;
+    use log;
     use ansi_term::Colour;
     use super::*;
 
@@ -837,7 +822,7 @@ mod tests {
 
     #[test]
     fn color_works() {
-        let logger = Logger::new().color(&LogLevel::Trace, Colour::Fixed(11));
+        let logger = Logger::new().color(&log::Level::Trace, Colour::Fixed(11));
         assert_eq!(logger.trace.color, Colour::Fixed(11));
     }
 
@@ -874,14 +859,14 @@ mod tests {
 
     #[test]
     fn max_level_works() {
-        let logger = Logger::new().max_level(LogLevel::Trace);
-        assert_eq!(logger.level, LogLevel::Trace);
+        let logger = Logger::new().max_level(log::Level::Trace);
+        assert_eq!(logger.level, log::Level::Trace);
         assert!(logger.verbosity.is_none());
     }
 
     #[test]
     fn base_level_works() {
-        let logger = Logger::new().base_level(LogLevel::Info);
+        let logger = Logger::new().base_level(log::Level::Info);
         assert_eq!(logger.offset, 2);
     }
 
@@ -906,11 +891,11 @@ mod tests {
     #[test]
     fn output_works() {
         let logger = Logger::new()
-            .output(&LogLevel::Error, Output::Stdout)
-            .output(&LogLevel::Warn, Output::Stdout)
-            .output(&LogLevel::Info, Output::Stderr)
-            .output(&LogLevel::Debug, Output::Stderr)
-            .output(&LogLevel::Trace, Output::Stderr);
+            .output(&log::Level::Error, Output::Stdout)
+            .output(&log::Level::Warn, Output::Stdout)
+            .output(&log::Level::Info, Output::Stderr)
+            .output(&log::Level::Debug, Output::Stderr)
+            .output(&log::Level::Trace, Output::Stderr);
         assert_eq!(logger.error.output, Output::Stdout);
         assert_eq!(logger.warn.output, Output::Stdout);
         assert_eq!(logger.info.output, Output::Stderr);
@@ -927,11 +912,11 @@ mod tests {
     #[test]
     fn select_color_works() {
         let logger = Logger::new();
-        assert_eq!(logger.select_color(&LogLevel::Error), DEFAULT_ERROR_COLOR);
-        assert_eq!(logger.select_color(&LogLevel::Warn), DEFAULT_WARN_COLOR);
-        assert_eq!(logger.select_color(&LogLevel::Info), DEFAULT_INFO_COLOR);
-        assert_eq!(logger.select_color(&LogLevel::Debug), DEFAULT_DEBUG_COLOR);
-        assert_eq!(logger.select_color(&LogLevel::Trace), DEFAULT_TRACE_COLOR);
+        assert_eq!(logger.select_color(&log::Level::Error), DEFAULT_ERROR_COLOR);
+        assert_eq!(logger.select_color(&log::Level::Warn), DEFAULT_WARN_COLOR);
+        assert_eq!(logger.select_color(&log::Level::Info), DEFAULT_INFO_COLOR);
+        assert_eq!(logger.select_color(&log::Level::Debug), DEFAULT_DEBUG_COLOR);
+        assert_eq!(logger.select_color(&log::Level::Trace), DEFAULT_TRACE_COLOR);
     }
 }
 
