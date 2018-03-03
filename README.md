@@ -13,7 +13,7 @@ First, add this to your `Cargo.toml`:
 ```toml
 [dependencies]
 log = "0.4"
-loggerv = "0.6"
+loggerv = "0.7"
 ```
 
 Next, add this to the `main.rs` or the file containing the `main` function for your CLI program:
