@@ -130,17 +130,17 @@ use std::io::{self, Write};
 use ansi_term::Colour;
 
 pub const DEFAULT_COLORS: bool = true;
-pub const DEFAULT_DEBUG_COLOR: Colour = Colour::Fixed(7); // light grey
-pub const DEFAULT_ERROR_COLOR: Colour = Colour::Fixed(9); // bright red
+pub const DEFAULT_DEBUG_COLOR: Colour = Colour::White;
+pub const DEFAULT_ERROR_COLOR: Colour = Colour::Red;
 pub const DEFAULT_INCLUDE_LEVEL: bool = false;
 pub const DEFAULT_INCLUDE_LINE_NUMBERS: bool = false;
 pub const DEFAULT_INCLUDE_MODULE_PATH: bool = true;
-pub const DEFAULT_INFO_COLOR: Colour = Colour::Fixed(10); // bright green
+pub const DEFAULT_INFO_COLOR: Colour = Colour::Green;
 pub const DEFAULT_LEVEL: log::Level = log::Level::Warn;
 pub const DEFAULT_OFFSET: u64 = 1;
 pub const DEFAULT_SEPARATOR: &str = ": ";
-pub const DEFAULT_TRACE_COLOR: Colour = Colour::Fixed(8); // grey
-pub const DEFAULT_WARN_COLOR: Colour = Colour::Fixed(11); // bright yellow
+pub const DEFAULT_TRACE_COLOR: Colour = Colour::Purple;
+pub const DEFAULT_WARN_COLOR: Colour = Colour::Yellow;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Output {
