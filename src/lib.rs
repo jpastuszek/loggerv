@@ -807,7 +807,7 @@ impl log::Log for Logger {
 
     fn log(&self, record: &log::Record) {
         if self.enabled(record.metadata()) {
-            if !self.module_path_filters.is_empty() && self.module_path_filters.iter().any(|filter| record.module_path().unwrap_or(MODULE_PATH_UNKNOWN).starts_with(filter)) {
+            if !self.module_path_filters.is_empty() && !self.module_path_filters.iter().any(|filter| record.module_path().unwrap_or(MODULE_PATH_UNKNOWN).starts_with(filter)) {
                 return
             }
             match self.select_output(&record.level()) {
